@@ -1,7 +1,20 @@
 {% extends 'base.html.twig' %}
 
-{% block title %}User Page{% endblock %}
+{% block title %}User Records{% endblock %}
 
 {% block body %}
-    <h1>User Page</h1>
+    <div>
+        <h3 style="text-align: center; padding: 25px">User records</h3>
+        <table class="table table-striped table-bordered" style="width:80%;text-align: center;margin-left:auto;margin-right:auto;">
+            <thead>
+            <tr style="justify-content: space-between">
+                <th>Date</th>
+                <th>Distance</th>
+                <th>Time</th>
+            </tr>
+            </thead>
+            <tbody>
+            </tbody>
+        </table>
+    </div>
 {% endblock %}

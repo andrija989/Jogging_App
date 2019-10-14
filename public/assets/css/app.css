@@ -1,5 +1,8 @@
-body {
-    background-color: lightgray;
+table {
+    margin-left:auto;
+    margin-right:auto;
 }
 
-
+body {
+    background-color: lightblue;
+}
