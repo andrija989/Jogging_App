@@ -4,8 +4,10 @@ namespace App\Controller;
 
 use App\Entity\User;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
+use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 use Symfony\Component\Security\Core\Encoder\UserPasswordEncoderInterface;
 
 class RegisterController extends AbstractController
@@ -14,11 +16,16 @@ class RegisterController extends AbstractController
      * @var UserPasswordEncoderInterface
      */
     private $passwordEncoder;
+    /**
+     * @var UrlGeneratorInterface
+     */
+    private $urlGenerator;
 
-    public function __construct(UserPasswordEncoderInterface $passwordEncoder)
+    public function __construct(UserPasswordEncoderInterface $passwordEncoder,UrlGeneratorInterface $urlGenerator)
     {
 
         $this->passwordEncoder = $passwordEncoder;
+        $this->urlGenerator = $urlGenerator;
     }
 
     public function index()
@@ -39,6 +46,6 @@ class RegisterController extends AbstractController
         $user->setRoles('ROLE_USER');
         $entityManager->persist($user);
         $entityManager->flush();
-        return new Response('Saved new user with id '.$user->getId());
+        return new RedirectResponse($this->urlGenerator->generate('login'));
     }
 }
