@@ -16,3 +16,8 @@ home:
   path: /home/{id}
   methods: GET
   controller: App\Controller\RecordController::index
+
+record-store:
+  path: /home/{id}
+  methods: POST
+  controller: App\Controller\RecordController::store

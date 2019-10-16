@@ -17,23 +17,23 @@
             <tbody>
                 {% for record in user.getRecords %}
                     <tr>
-                        <td>{{ record.getDate|date('Y-m-d') }}</td>
+                        <td>{{ record.getDate|date('Y-m-d H:i:s') }}</td>
                         <td>{{ record.getDistance }}km</td>
                         <td>{{ record.getTime }}min</td>
                     </tr>
                 {% endfor %}
             </tbody>
         </table>
-        <form style="padding-left: 10%" method="POST"  class="register-form">
+        <form style="padding-left: 10%" method="POST" action="{{ path('record-store',{'id': user.getId })}}"  class="register-form">
             <h3 style="padding: 25px">Create new running record</h3>
             <div class="form-group row ml-1">
                 <label for="distance" class="form-control col-sm-1">Distance</label>
-                <input type="text" class="form-control col-sm-4" id="distance" name="distance">
+                <input placeholder="Km" type="text" class="form-control col-sm-4" id="distance" name="distance">
             </div>
 
             <div class="form-group row ml-1" >
                 <label for="time" class="form-control col-sm-1">Time running</label>
-                <input type="text" class="form-control col-sm-4" id="time" name="time">
+                <input placeholder="min" type="text" class="form-control col-sm-4" id="time" name="time">
             </div>
             <div class="form-group ml-1">
                 <button type="submit" class="btn btn-primary">Submit</button>
