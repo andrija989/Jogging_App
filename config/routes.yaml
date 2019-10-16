@@ -13,5 +13,6 @@ register-store:
   controller: App\Controller\RegisterController::store
 
 home:
-  path: /home
-  controller: App\Controller\UserController::index
+  path: /home/{id}
+  methods: GET
+  controller: App\Controller\RecordController::index
