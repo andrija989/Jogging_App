@@ -22,6 +22,9 @@
                         <td>{{ record.getDistance }} km</td>
                         <td>{{ record.getTime }} min</td>
                         <td>{{ (record.getDistance / (record.getTime/60)) | round(2) }} km/h</td>
+                        <td>
+                            <a class="btn btn-primary" href="{{ path('edit',{ id : record.getId()})}}">Edit</a>
+                        </td>
                     </tr>
                 {% endfor %}
             </tbody>

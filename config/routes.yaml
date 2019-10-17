@@ -22,6 +22,16 @@ record-store:
   methods: POST
   controller: App\Controller\RecordController::store
 
+edit:
+  path: /record/edit/{id}
+  methods: GET
+  controller: App\Controller\RecordController::edit
+
+record-update:
+  path: /record/edit/{id}
+  methods: POST
+  controller: App\Controller\RecordController::updateRecord
+
 login:
   path: /login
   methods: GET

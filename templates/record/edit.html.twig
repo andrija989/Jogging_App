@@ -1,0 +1,22 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Record edit{% endblock %}
+
+{% block body %}
+    <form style="padding-left: 10%" method="POST" action="{{ path('record-update',{'id': record.getId()})}}"  class="update-form">
+        <h3 style="padding: 25px">Change your record</h3>
+        <div class="form-group row ml-1">
+            <label for="distance" class="form-control col-sm-1">Distance</label>
+            <input placeholder="{{ record.getDistance() }}" type="text" class="form-control col-sm-4" id="distance" name="distance">
+        </div>
+
+        <div class="form-group row ml-1" >
+            <label for="time" class="form-control col-sm-1">Time running</label>
+            <input placeholder="{{ record.getTime() }}" type="text" class="form-control col-sm-4" id="time" name="time">
+        </div>
+        <div class="form-group ml-1">
+            <button type="submit" class="btn btn-primary">Submit</button>
+        </div>
+    </form>
+{% endblock %}
+

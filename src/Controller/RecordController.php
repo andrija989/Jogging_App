@@ -34,7 +34,7 @@ class RecordController extends AbstractController
             throw new Exception('No user found under ID you search for');
         }
 
-        return $this->render('Users/user.html.twig', ['user' => $user]);
+        return $this->render('Users/record.html.twig', ['user' => $user]);
     }
 
     public function store(Request $request, $id)
@@ -48,6 +48,31 @@ class RecordController extends AbstractController
         $record->setTime($request->get('time'));
         $user = $this->getDoctrine()->getRepository(User::class)->find($id);
         $record->setUser($user);
+
+        $entityManager->persist($record);
+        $entityManager->flush();
+
+        return new RedirectResponse($this->urlGenerator->generate('home',['id' => $user->getId()]));
+    }
+
+    public function edit($id)
+    {
+        {
+            $record = $this->getDoctrine()->getRepository(Record::class)->find($id);
+
+            return $this->render('record/edit.html.twig', ['record' => $record]);
+        }
+    }
+
+
+    public function updateRecord(Request $request,$id)
+    {
+        $entityManager = $this->getDoctrine()->getManager();
+        $user = $this->getUser();
+        
+        $record = $this->getDoctrine()->getRepository(Record::class)->find($id);
+        $record->setDistance(($request->get('distance')));
+        $record->settime(($request->get('time')));
 
         $entityManager->persist($record);
         $entityManager->flush();
