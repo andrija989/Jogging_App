@@ -21,7 +21,7 @@
                     {% if is_granted('ROLE_ADMINISTRATOR') %}
                         <a class="nav-item nav-link" href="/administrator">Administrator page</a>
                     {% endif %}
-                        <a class="nav-item nav-link" href="#">Logout</a>
+                        <button><a  class="nav-item nav-link" href="{{ path('logout') }}">Logout</a></button>
                 {% endif %}
                 {% if not app.user %}
                 <a class="nav-item nav-link" href="/login">Login</a>

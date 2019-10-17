@@ -27,6 +27,10 @@ login:
   methods: GET
   controller: App\Controller\SecurityController::login
 
+logout:
+  path: /logout
+  methods: GET
+
 administrator-page:
   path: /administrator
   methods: GET
