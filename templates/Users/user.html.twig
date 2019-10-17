@@ -4,7 +4,7 @@
 
 {% block body %}
     <div>
-        <h1 style="text-align: center; padding: 25px">User records of:</h1>
+        <h1 style="text-align: center; padding: 25px">Records of user:</h1>
         <h3 style="text-align: center;">{{ user.getUsername() }}</h3>
         <table class="table table-striped table-bordered" style="width:80%;text-align: center;margin-left:auto;margin-right:auto;">
             <thead>
@@ -21,7 +21,7 @@
                         <td>{{ record.getDate|date('Y-m-d H:i:s') }}</td>
                         <td>{{ record.getDistance }} km</td>
                         <td>{{ record.getTime }} min</td>
-                        <td>{{ record.getDistance / (record.getTime/60) }} km/h</td>
+                        <td>{{ (record.getDistance / (record.getTime/60)) | round(2) }} km/h</td>
                     </tr>
                 {% endfor %}
             </tbody>

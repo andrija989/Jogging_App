@@ -26,3 +26,21 @@ login:
   path: /login
   methods: GET
   controller: App\Controller\SecurityController::login
+
+administrator-page:
+  path: /administrator
+  methods: GET
+  controller: App\Controller\AdministratorController::index
+
+administrator-delete:
+  path: /administrator/delete/{id}
+  methods: POST
+  controller: App\Controller\AdministratorController::deleteUser
+
+administrator-update:
+  path: /administrator/update/{id}
+  methods: POST
+  controller: App\Controller\AdministratorController::updateUser
+
+
+

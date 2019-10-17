@@ -13,10 +13,20 @@
         </button>
         <div id="navbarNavAltMarkup">
             <div class="navbar-nav">
-                <a class="nav-item nav-link active" href="/home/11">User records</a>
-                <a class="nav-item nav-link" href="#">Administrator page</a>
+                {% if app.user %}
+                <a class="nav-item nav-link active" href="{{ path('home', {'id': app.user.getId()}) }}">User records</a>
+                    {% if is_granted('ROLE_USER_MANAGER') %}
+                        <a class="nav-item nav-link" href="/administrator">Administrator page</a>
+                        {% endif %}
+                    {% if is_granted('ROLE_ADMINISTRATOR') %}
+                        <a class="nav-item nav-link" href="/administrator">Administrator page</a>
+                    {% endif %}
+                        <a class="nav-item nav-link" href="#">Logout</a>
+                {% endif %}
+                {% if not app.user %}
                 <a class="nav-item nav-link" href="/login">Login</a>
                 <a class="nav-item nav-link" href="/register">Register</a>
+                {% endif %}
             </div>
         </div>
     </nav>

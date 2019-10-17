@@ -36,7 +36,7 @@ class User implements UserInterface
     private $password;
 
     /**
-     * @ORM\OneToMany(targetEntity="App\Entity\Record", mappedBy="user")
+     * @ORM\OneToMany(targetEntity="App\Entity\Record", mappedBy="user", cascade={"remove"})
      */
     private $records;
 
