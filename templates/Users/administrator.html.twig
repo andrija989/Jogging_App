@@ -27,10 +27,9 @@
                     {% endfor %}
 
                     <td>
+                        {% if is_granted('ROLE_USER_MANAGER') == false %}
                         <form method="POST" action="{{ path('administrator-delete',{'id': user.getId()})}}" class="delete-form">
-                            {% if is_granted('ROLE_ADMINISTRATOR') %}
                             <button type="submit" class="btn btn-primary">Delete user</button>
-                            {% endif %}
                         </form>
                     </td>
 
@@ -44,7 +43,7 @@
                             <button type="submit" class="btn btn-primary">Change permission</button>
                         </form>
                     </td>
-
+                    {% endif %}
                 </tr>
                 {% endfor %}
             </tbody>
