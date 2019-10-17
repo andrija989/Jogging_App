@@ -3,9 +3,22 @@
 {% block title %}User Records{% endblock %}
 
 {% block body %}
+    <style>
+        form {width: 80%; padding-left: 15%}
+        .btn-secondary {margin-left: 25px}
+    </style>
     <div>
         <h1 style="text-align: center; padding: 25px">Records of user:</h1>
-        <h3 style="text-align: center;">{{ user.getUsername() }}</h3>
+        <h3 style="text-align: center; padding-bottom: 50px">{{ user.getUsername() }}</h3>
+        <form>
+            <div class="form-group row ml-1">
+                <label for="dateFrom" class="form-control col-sm-1">Date From</label>
+                <input type="date" class="form-control col-sm-4" id="dateFrom" name="dateFrom">
+                <label for="dateTo" class="form-control col-sm-1">Date To</label>
+                <input type="date" class="form-control col-sm-4" id="dateTo" name="dateTo">
+                <button type="submit" class="btn btn-secondary">Filter data</button>
+            </div>
+        </form>
         <table class="table table-striped table-bordered" style="width:80%;text-align: center;margin-left:auto;margin-right:auto;">
             <thead>
             <tr style="justify-content: space-between">
@@ -37,12 +50,33 @@
             </div>
 
             <div class="form-group row ml-1" >
-                <label for="time" class="form-control col-sm-1">Time running</label>
+                <label for="time" class="form-control col-sm-1">Time</label>
                 <input placeholder="min" type="text" class="form-control col-sm-4" id="time" name="time">
             </div>
             <div class="form-group ml-1">
                 <button type="submit" class="btn btn-primary">Submit</button>
             </div>
         </form>
+        <table class="table table-striped table-bordered" style="width:80%;text-align: center;margin-left:auto;margin-right:auto;">
+            <thead>
+            <tr style="justify-content: space-between">
+                <th>Week</th>
+                <th>Average Distance</th>
+                <th>Average Time</th>
+            </tr>
+            </thead>
+            <tbody>
+            <div style="padding-left: 10%">
+                <h3 style="padding: 25px" >Weekly reports</h3>
+                {% for record in user.getRecords %}
+                    <tr>
+                        <td>{{ record.getDate.format('W') }}</td>
+                        <td>{{ record.getDistance }} km</td>
+                        <td>{{ record.getTime }} min</td>
+                    </tr>
+                {% endfor %}
+            </div>
+            </tbody>
+        </table>
     </div>
 {% endblock %}
