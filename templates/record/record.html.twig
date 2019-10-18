@@ -10,7 +10,7 @@
     <div>
         <h1 style="text-align: center; padding: 25px;">Records of user:</h1>
         <h3 style="text-align: center; padding-bottom: 50px">{{ user.getUsername() }}</h3>
-        <form>
+        <form method="GET" action="{{ path('home',{'id': user.getId })}}">
             <div class="form-group row ml-1">
                 <label for="dateFrom" class="form-control col-sm-1">Date From</label>
                 <input type="date" class="form-control col-sm-4" id="dateFrom" name="dateFrom">
@@ -30,6 +30,8 @@
             </thead>
             <tbody>
                 {% for record in user.getRecords %}
+                    {% if dateFrom < record.getDate|date('Y-m-d') %}
+                        {% if dateTo > record.getDate|date('Y-m-d') %}
                     <tr>
                         <td>{{ record.getDate|date('Y-m-d H:i:s') }}</td>
                         <td>{{ record.getDistance }} km</td>
@@ -39,6 +41,19 @@
                             <a class="btn btn-primary" href="{{ path('edit',{ id : record.getId()})}}">Edit</a>
                         </td>
                     </tr>
+                            {% endif %}
+                    {% endif %}
+                    {% if not dateFrom %}
+                    <tr>
+                        <td>{{ record.getDate|date('Y-m-d H:i:s') }}</td>
+                        <td>{{ record.getDistance }} km</td>
+                        <td>{{ record.getTime }} min</td>
+                        <td>{{ (record.getDistance / (record.getTime/60)) | round(2) }} km/h</td>
+                        <td>
+                            <a class="btn btn-primary" href="{{ path('edit',{ id : record.getId()})}}">Edit</a>
+                        </td>
+                    </tr>
+                    {% endif %}
                 {% endfor %}
             </tbody>
         </table>

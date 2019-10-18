@@ -4,6 +4,7 @@ namespace App\Controller;
 
 use App\Entity\User;
 use App\Entity\Record;
+use Cassandra\Date;
 Use Exception;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\RedirectResponse;
@@ -26,15 +27,16 @@ class RecordController extends AbstractController
     /**
      * @Route("/record", name="record")
      */
-    public function index($id)
+    public function index(Request $request, $id)
     {
         $user = $this->getDoctrine()->getRepository(User::class)->find($id);
-
+        $dateFrom = $request->get('dateFrom');
+        $dateTo = $request->get('dateTo');
         if (!$user) {
             throw new Exception('No user found under ID you search for');
         }
 
-        return $this->render('record/record.html.twig', ['user' => $user]);
+        return $this->render('record/record.html.twig', ['user' => $user, 'dateFrom' => $dateFrom, 'dateTo' => $dateTo]);
     }
 
     public function store(Request $request, $id)
@@ -79,5 +81,7 @@ class RecordController extends AbstractController
 
         return new RedirectResponse($this->urlGenerator->generate('home',['id' => $user->getId()]));
     }
+
+
 
 }
