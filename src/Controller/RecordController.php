@@ -32,11 +32,32 @@ class RecordController extends AbstractController
         $user = $this->getDoctrine()->getRepository(User::class)->find($id);
         $dateFrom = $request->get('dateFrom');
         $dateTo = $request->get('dateTo');
+        $reportDate = $request->get('week');
+
+        $records = $user->getRecords();
+        $report = [];
+        $speed = 0;
+        $time = 0;
+        $averageSpeed = 0;
+        $averageTime = 0;
+        $counter = 0;
+
+        foreach($records as $record) {
+            if ( $record->getDate()->format('W') == 42)
+                {
+                    $speed += $record->getDistance() / ($record->getTime()/60);
+                    $time += $record->getTime();
+                    $counter++;
+                }
+            $averageSpeed = $speed / $counter;
+            $averageTime = $time / $counter;
+        }
+
         if (!$user) {
             throw new Exception('No user found under ID you search for');
         }
 
-        return $this->render('record/record.html.twig', ['user' => $user, 'dateFrom' => $dateFrom, 'dateTo' => $dateTo]);
+        return $this->render('record/record.html.twig', ['user' => $user, 'dateFrom' => $dateFrom, 'dateTo' => $dateTo, 'averageSpeed' => $averageSpeed, 'averageTime' => $averageTime, 'reportDate' => $reportDate]);
     }
 
     public function store(Request $request, $id)

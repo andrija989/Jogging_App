@@ -15,7 +15,7 @@
                 <label for="dateFrom" class="form-control col-sm-1">Date From</label>
                 <input type="date" class="form-control col-sm-4" id="dateFrom" name="dateFrom">
                 <label for="dateTo" class="form-control col-sm-1">Date To</label>
-                <input type="date" class="form-control col-sm-4" id="dateTo" name="dateTo">
+                <input type="date" data-date-format="DD MMMM YYYY" class="form-control col-sm-4" id="dateTo" name="dateTo">
                 <button type="submit" class="btn btn-secondary">Filter data</button>
             </div>
         </form>
@@ -83,13 +83,23 @@
             <tbody>
             <div style="padding-left: 10%">
                 <h3 style="padding: 25px" >Weekly reports</h3>
-                {% for record in user.getRecords %}
-                    <tr>
-                        <td>{{ record.getDate.format('W') }}</td>
-                        <td>{{ record.getDistance }} km</td>
-                        <td>{{ record.getTime }} min</td>
-                    </tr>
-                {% endfor %}
+                <form method="GET" action="{{ path('home',{'id': user.getId })}}">
+                    <select  id="week" name="week">
+                        {% for record in user.getRecords %}
+
+                        <option value="{{ record.getDate.format('W')}}">{{ record.getDate.format('W')}}</option>
+
+                        {% endfor %}
+                    </select>
+                    <button type="submit" class="btn btn-primary">Filter weekly reports</button>
+                </form>
+                {% if reportDate %}
+                <tr>
+                    <td> {{ reportDate }} </td>
+                    <td>{{ averageSpeed }} km</td>
+                    <td>{{ averageTime }} min</td>
+                </tr>
+                {% endif %}
             </div>
             </tbody>
         </table>
