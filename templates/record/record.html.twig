@@ -45,7 +45,7 @@
                     {% endif %}
                     {% if not dateFrom %}
                     <tr>
-                        <td>{{ record.getDate|date('Y-m-d H:i:s') }}</td>
+                        <td>{{ record.getDate|date('Y-m-d - - - - - - H:i:s') }} </td>
                         <td>{{ record.getDistance }} km</td>
                         <td>{{ record.getTime }} min</td>
                         <td>{{ (record.getDistance / (record.getTime/60)) | round(2) }} km/h</td>
@@ -76,8 +76,8 @@
             <thead>
             <tr style="justify-content: space-between">
                 <th>Week</th>
-                <th>Average Distance</th>
-                <th>Average Time</th>
+                <th>Average Distance / Week</th>
+                <th>Average Time / Week</th>
             </tr>
             </thead>
             <tbody>
@@ -86,9 +86,7 @@
                 <form method="GET" action="{{ path('home',{'id': user.getId })}}">
                     <select  id="week" name="week">
                         {% for week in weeks %}
-
-                        <option value="{{ week }}">{{ week }}</option>
-
+                            <option value="{{ week }}">{{ week }}</option>
                         {% endfor %}
                     </select>
                     <button type="submit" class="btn btn-primary">Filter weekly reports</button>
