@@ -8,7 +8,7 @@
         .btn-secondary {margin-left: 25px}
     </style>
     <div>
-        <h1 style="text-align: center; padding: 25px;">Records of user:</h1>
+        <h1 style="text-align: center; padding: 25px; font-family: 'Bungee Inline', cursive;">Records of user:</h1>
         <h3 style="text-align: center; padding-bottom: 50px">{{ user.getUsername() }}</h3>
         <form method="GET" action="{{ path('home',{'id': user.getId })}}">
             <div class="form-group row ml-1">
