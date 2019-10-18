@@ -29,35 +29,52 @@ class RecordController extends AbstractController
      */
     public function index(Request $request, $id)
     {
-        $user = $this->getDoctrine()->getRepository(User::class)->find($id);
-        $dateFrom = $request->get('dateFrom');
+        $user = $this->getDoctrine()->getRepository(User::class)->find($id); // getting user, and records in records view
+        $dateFrom = $request->get('dateFrom'); // record filter add-on
         $dateTo = $request->get('dateTo');
         $reportDate = $request->get('week');
 
         $records = $user->getRecords();
-        $report = [];
         $speed = 0;
         $time = 0;
         $averageSpeed = 0;
         $averageTime = 0;
         $counter = 0;
 
-        foreach($records as $record) {
-            if ( $record->getDate()->format('W') == 42)
+
+        if (isset($reportDate)) { // report filter logic//
+            foreach($records as $record) {
+                if ( $record->getDate()->format('W') == $reportDate)
                 {
                     $speed += $record->getDistance() / ($record->getTime()/60);
                     $time += $record->getTime();
                     $counter++;
                 }
-            $averageSpeed = $speed / $counter;
-            $averageTime = $time / $counter;
+                $averageSpeed = $speed / $counter;
+                $averageTime = $time / $counter;
+            }
         }
+
+
+        $weeks = [];
+        foreach ($records as $record)
+        {
+            $weeks[] += $record->getDate()->format('W');
+        }
+        $weeks = array_unique($weeks);
 
         if (!$user) {
             throw new Exception('No user found under ID you search for');
         }
 
-        return $this->render('record/record.html.twig', ['user' => $user, 'dateFrom' => $dateFrom, 'dateTo' => $dateTo, 'averageSpeed' => $averageSpeed, 'averageTime' => $averageTime, 'reportDate' => $reportDate]);
+        return $this->render('record/record.html.twig', [
+            'user' => $user,
+            'dateFrom' => $dateFrom,
+            'dateTo' => $dateTo,
+            'averageSpeed' => $averageSpeed,
+            'averageTime' => $averageTime,
+            'reportDate' => $reportDate,
+            'weeks' => $weeks]);
     }
 
     public function store(Request $request, $id)

@@ -85,9 +85,9 @@
                 <h3 style="padding: 25px" >Weekly reports</h3>
                 <form method="GET" action="{{ path('home',{'id': user.getId })}}">
                     <select  id="week" name="week">
-                        {% for record in user.getRecords %}
+                        {% for week in weeks %}
 
-                        <option value="{{ record.getDate.format('W')}}">{{ record.getDate.format('W')}}</option>
+                        <option value="{{ week }}">{{ week }}</option>
 
                         {% endfor %}
                     </select>
