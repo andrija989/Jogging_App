@@ -3,6 +3,7 @@
 namespace App\Controller;
 
 use App\Entity\User;
+use App\Repository\Interfaces\UserRepositoryInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Routing\Annotation\Route;
@@ -10,6 +11,20 @@ use App\Repository\UserRepository;
 
 class AdministratorController extends AbstractController
 {
+    /**
+     * @var UserRepository
+     */
+    private $userRepository;
+
+    /**
+     * AdministratorController constructor.
+     * @param UserRepositoryInterface $userRepository
+     */
+    public function __construct(UserRepositoryInterface $userRepository)
+    {
+        $this->userRepository = $userRepository;
+    }
+
     /**
      * @Route("/administrator", name="administrator")
      */
@@ -22,12 +37,8 @@ class AdministratorController extends AbstractController
 
     public function deleteUser($id)
     {
-        $em = $this->getDoctrine()->getManager();
-        $usrRepo = $em->getRepository(User::class);
-
-        $user = $usrRepo->find($id);
-        $em->remove($user);
-        $em->flush();
+        $user = $this->userRepository->ofId($id);
+        $this->userRepository->remove($user);
 
         return $this->redirectToRoute('administrator-page');
 

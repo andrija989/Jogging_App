@@ -25,11 +25,10 @@ class UserRepository extends ServiceEntityRepository implements UserRepositoryIn
     public function ofId(int $id): ?User
     {
         return $this->createQueryBuilder('u')
-            ->where('u.id = :id')
+            ->where("u.id = :id")
             ->setParameter('id', $id)
             ->getQuery()
-            ->getResult()
-        ;
+            ->getOneOrNullResult();
     }
 
     public function add(User $user): User
@@ -40,7 +39,7 @@ class UserRepository extends ServiceEntityRepository implements UserRepositoryIn
         return $user;
     }
 
-    public function remove(User $user): User
+    public function remove(User $user)
     {
         $this->getEntityManager()->remove($user);
         $this->getEntityManager()->flush();
