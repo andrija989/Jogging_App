@@ -35,22 +35,23 @@ class RecordController extends AbstractController
         $reportDate = $request->get('week');
 
         $records = $user->getRecords();
-        $speed = 0;
+        $distance = 0;
         $time = 0;
-        $averageSpeed = 0;
+        $averageDistance = 0;
         $averageTime = 0;
-        $counter = 0;
+        $counter = 0.0001;
 
 
         if (isset($reportDate)) { // report filter logic//
             foreach($records as $record) {
                 if ( $record->getDate()->format('W') == $reportDate)
                 {
-                    $speed += $record->getDistance() / ($record->getTime()/60);
+                    $distance += $record->getDistance();
                     $time += $record->getTime();
                     $counter++;
+
                 }
-                $averageSpeed = $speed / $counter;
+                $averageDistance = $distance / $counter;
                 $averageTime = $time / $counter;
             }
         }
@@ -71,7 +72,7 @@ class RecordController extends AbstractController
             'user' => $user,
             'dateFrom' => $dateFrom,
             'dateTo' => $dateTo,
-            'averageSpeed' => $averageSpeed,
+            'averageDistance' => $averageDistance,
             'averageTime' => $averageTime,
             'reportDate' => $reportDate,
             'weeks' => $weeks]);

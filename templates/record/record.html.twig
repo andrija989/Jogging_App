@@ -94,8 +94,8 @@
                 {% if reportDate %}
                 <tr>
                     <td> {{ reportDate }} </td>
-                    <td>{{ averageSpeed }} km</td>
-                    <td>{{ averageTime }} min</td>
+                    <td>{{ averageDistance | round(2)}} km</td>
+                    <td>{{ averageTime | round(2)}} min</td>
                 </tr>
                 {% endif %}
             </div>
