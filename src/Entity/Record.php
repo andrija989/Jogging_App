@@ -17,16 +17,22 @@ class Record
     private $id;
 
     /**
+     * @var \DateTimeImmutable $date
+     *
      * @ORM\Column(type="datetime")
      */
     private $date;
 
     /**
+     *@var int $distance
+     *
      * @ORM\Column(type="integer")
      */
     private $distance;
 
     /**
+     * @var int $time
+     *
      * @ORM\Column(type="integer")
      */
     private $time;
@@ -37,16 +43,26 @@ class Record
      */
     private $user;
 
+    /**
+     * @return int|null
+     */
     public function getId(): ?int
     {
         return $this->id;
     }
 
+    /**
+     * @return \DateTimeInterface|null
+     */
     public function getDate(): ?\DateTimeInterface
     {
         return $this->date;
     }
 
+    /**
+     * @param \DateTimeInterface $date
+     * @return $this
+     */
     public function setDate(\DateTimeInterface $date): self
     {
         $this->date = $date;
@@ -54,11 +70,18 @@ class Record
         return $this;
     }
 
+    /**
+     * @return int|null
+     */
     public function getDistance(): ?int
     {
         return $this->distance;
     }
 
+    /**
+     * @param int $distance
+     * @return $this
+     */
     public function setDistance(int $distance): self
     {
         $this->distance = $distance;
@@ -66,11 +89,18 @@ class Record
         return $this;
     }
 
+    /**
+     * @return int|null
+     */
     public function getTime(): ?int
     {
         return $this->time;
     }
 
+    /**
+     * @param int $time
+     * @return $this
+     */
     public function setTime(int $time): self
     {
         $this->time = $time;
@@ -78,11 +108,18 @@ class Record
         return $this;
     }
 
+    /**
+     * @return User|null
+     */
     public function getUser(): ?User
     {
         return $this->user;
     }
 
+    /**
+     * @param User|null $user
+     * @return $this
+     */
     public function setUser(?User $user): self
     {
         $this->user = $user;

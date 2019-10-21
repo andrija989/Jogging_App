@@ -122,10 +122,10 @@ class RecordController extends AbstractController
     public function deleteRecord($id)
     {
         $em = $this->getDoctrine()->getManager();
-        $record = $this->getDoctrine()->getRepository(Record::class)->find($id);
+        $recordRepo = $em->getRepository(Record::class)->find($id);
         $user = $this->getUser();
 
-        $em->remove($record);
+        $em->remove($recordRepo);
         $em->flush();
 
         return new RedirectResponse($this->urlGenerator->generate('home',['id' => $user->getId()]));

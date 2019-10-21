@@ -20,17 +20,22 @@ class User implements UserInterface
     private $id;
 
     /**
+     * @var string $email
+     *
      * @ORM\Column(type="string", length=180, unique=true)
      */
     private $email;
 
     /**
+     * @var string $roles
+     *
      * @ORM\Column(type="string")
      */
     private $roles;
 
     /**
      * @var string The hashed password
+     *
      * @ORM\Column(type="string")
      */
     private $password;
@@ -45,16 +50,26 @@ class User implements UserInterface
         $this->records = new ArrayCollection();
     }
 
-    public function getId(): ?int
+    /**
+     * @return int
+     */
+    public function getId(): int
     {
         return $this->id;
     }
 
-    public function getEmail(): ?string
+    /**
+     * @return string
+     */
+    public function getEmail(): string
     {
         return $this->email;
     }
 
+    /**
+     * @param string $email
+     * @return $this
+     */
     public function setEmail(string $email): self
     {
         $this->email = $email;
@@ -66,6 +81,10 @@ class User implements UserInterface
      * A visual identifier that represents this user.
      *
      * @see UserInterface
+     *
+     */
+    /**
+     * @return string
      */
     public function getUsername(): string
     {
@@ -75,11 +94,18 @@ class User implements UserInterface
     /**
      * @see UserInterface
      */
+    /**
+     * @return array
+     */
     public function getRoles(): array
     {
         return [$this->roles];
     }
 
+    /**
+     * @param $roles
+     * @return $this
+     */
     public function setRoles($roles): self
     {
         $this->roles = $roles;
@@ -90,11 +116,18 @@ class User implements UserInterface
     /**
      * @see UserInterface
      */
+    /**
+     * @return string
+     */
     public function getPassword(): string
     {
         return (string) $this->password;
     }
 
+    /**
+     * @param string $password
+     * @return $this
+     */
     public function setPassword(string $password): self
     {
         $this->password = $password;
@@ -119,14 +152,28 @@ class User implements UserInterface
         // $this->plainPassword = null;
     }
 
+    public function createRecord(): Record
+    {
+        return new Record(
+            $this
+        );
+    }
+
     /**
      * @return Collection|Record[]
+     */
+    /**
+     * @return Collection
      */
     public function getRecords(): Collection
     {
         return $this->records;
     }
 
+    /**
+     * @param Record $record
+     * @return $this
+     */
     public function addRecord(Record $record): self
     {
         if (!$this->records->contains($record)) {
@@ -137,6 +184,10 @@ class User implements UserInterface
         return $this;
     }
 
+    /**
+     * @param Record $record
+     * @return $this
+     */
     public function removeRecord(Record $record): self
     {
         if ($this->records->contains($record)) {
