@@ -41,7 +41,6 @@ class RecordController extends AbstractController
         $averageTime = 0;
         $counter = 0.0001;
 
-
         if (isset($reportDate)) { // report filter logic//
             foreach($records as $record) {
                 if ( $record->getDate()->format('W') == $reportDate)
@@ -56,9 +55,8 @@ class RecordController extends AbstractController
             }
         }
 
-
         $weeks = [];
-        foreach ($records as $record)
+        foreach ($records as $record) // report select option getting weeks
         {
             $weeks[] += $record->getDate()->format('W');
         }
