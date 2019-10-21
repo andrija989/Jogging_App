@@ -30,7 +30,7 @@ class AdministratorController extends AbstractController
      */
     public function index()
     {
-        $users = $this->getDoctrine()->getRepository(User::class)->findAll();
+        $users = $this->userRepository->findAll();
 
         return $this->render('Users/administrator.html.twig', ['users' => $users]);
     }
@@ -47,12 +47,11 @@ class AdministratorController extends AbstractController
     {
         $entityManager = $this->getDoctrine()->getManager();
 
-        $user = $this->getDoctrine()->getRepository(User::class)->find($id);
-        $users = $this->getDoctrine()->getRepository(User::class)->findAll();
+        $user = $this->userRepository->ofId($id);
+        $users = $this->userRepository->findAll();
         $user->setRoles(($request->get('role')));
 
-        $entityManager->persist($user);
-        $entityManager->flush();
+        $this->userRepository->add($user);
 
         return $this->render('Users/administrator.html.twig', ['users' => $users]);
     }
