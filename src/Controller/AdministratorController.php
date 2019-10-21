@@ -45,8 +45,6 @@ class AdministratorController extends AbstractController
     }
     public function updateUser(Request $request,$id)
     {
-        $entityManager = $this->getDoctrine()->getManager();
-
         $user = $this->userRepository->ofId($id);
         $users = $this->userRepository->findAll();
         $user->setRoles(($request->get('role')));
