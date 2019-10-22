@@ -2,10 +2,12 @@
 
 namespace App\Controller;
 
-use App\Entity\User;
 use App\Entity\Record;
-use Cassandra\Date;
-Use Exception;
+use App\Filters\RecordFilter;
+use App\Repository\Interfaces\RecordRepositoryInterface;
+use App\Repository\Interfaces\UserRepositoryInterface;
+use App\Repository\RecordRepository;
+use App\Repository\UserRepository;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\Routing\Annotation\Route;
@@ -19,9 +21,33 @@ class RecordController extends AbstractController
      */
     private $urlGenerator;
 
-    public function __construct(UrlGeneratorInterface $urlGenerator)
+    /**
+     * @var RecordRepository
+     */
+    private $recordRepository;
+
+    /**
+     * @var UserRepository
+     */
+    private $userRepository;
+
+    /**
+     * @var RecordFilter
+     */
+    private $filter;
+
+    /**
+     * RecordController constructor.
+     * @param UrlGeneratorInterface $urlGenerator
+     * @param RecordRepositoryInterface $recordRepository
+     * @param UserRepositoryInterface $userRepository
+     */
+    public function __construct(UrlGeneratorInterface $urlGenerator, RecordRepositoryInterface $recordRepository, UserRepositoryInterface $userRepository, RecordFilter $filter)
     {
         $this->urlGenerator = $urlGenerator;
+        $this->recordRepository = $recordRepository;
+        $this->userRepository = $userRepository;
+        $this->filter = $filter;
     }
 
     /**
@@ -29,47 +55,28 @@ class RecordController extends AbstractController
      */
     public function index(Request $request, $id)
     {
-        $user = $this->getDoctrine()->getRepository(User::class)->find($id); // getting user, and records in records view
-        $dateFrom = $request->get('dateFrom'); // record filter add-on
-        $dateTo = $request->get('dateTo');
+        $filter = new RecordFilter($id);
+        $user = $this->userRepository->ofId($id);
+        $filter->setDateFrom($request->get('dateFrom'));
+        $filter->setDateTo($request->get('dateTo'));
         $reportDate = $request->get('week');
+        $records = $this->filter->getUserId();
 
-        $records = $user->getRecords();
-        $distance = 0;
-        $time = 0;
-        $averageDistance = 0;
-        $averageTime = 0;
-        $counter = 0.0001;
-
-        if (isset($reportDate)) { // report filter logic//
-            foreach($records as $record) {
-                if ( $record->getDate()->format('W') == $reportDate)
-                {
-                    $distance += $record->getDistance();
-                    $time += $record->getTime();
-                    $counter++;
-
-                }
-                $averageDistance = $distance / $counter;
-                $averageTime = $time / $counter;
-            }
+        if (isset($filter)) {
+            $records = $this->recordRepository->filter($filter);
         }
 
-        $weeks = [];
-        foreach ($records as $record) // report select option getting weeks
-        {
-            $weeks[] += $record->getDate()->format('W');
-        }
-        $weeks = array_unique($weeks);
+        /**
+         * Report getting with average speed and time
+         */
+        $averageTime= $this->recordRepository->averageTime($records, $reportDate);
+        $averageDistance = $this->recordRepository->averageDistance($records,$reportDate);
+        $weeks = $this->recordRepository->weeksNumber($records);
 
-        if (!$user) {
-            throw new Exception('No user found under ID you search for');
-        }
 
         return $this->render('record/record.html.twig', [
             'user' => $user,
-            'dateFrom' => $dateFrom,
-            'dateTo' => $dateTo,
+            'records' => $records,
             'averageDistance' => $averageDistance,
             'averageTime' => $averageTime,
             'reportDate' => $reportDate,
@@ -78,55 +85,44 @@ class RecordController extends AbstractController
 
     public function store(Request $request, $id)
     {
-        $entityManager = $this->getDoctrine()->getManager();
-
         $record = new Record();
-        $date = new \DateTime();
-        $record->setDate($date);
+        $record->setDate(new \DateTime());
         $record->setDistance($request->get('distance'));
         $record->setTime($request->get('time'));
-        $user = $this->getDoctrine()->getRepository(User::class)->find($id);
+        $user = $this->userRepository->ofId($id);
         $record->setUser($user);
 
-        $entityManager->persist($record);
-        $entityManager->flush();
+        $this->recordRepository->add($record);
 
         return new RedirectResponse($this->urlGenerator->generate('home',['id' => $user->getId()]));
     }
 
     public function edit($id)
     {
-        {
-            $record = $this->getDoctrine()->getRepository(Record::class)->find($id);
+       $record = $this->recordRepository->ofId($id);
 
-            return $this->render('record/edit.html.twig', ['record' => $record]);
-        }
+       return $this->render('record/edit.html.twig', ['record' => $record]);
+
     }
 
 
     public function updateRecord(Request $request,$id)
     {
-        $entityManager = $this->getDoctrine()->getManager();
-        $user = $this->getUser();
-
-        $record = $this->getDoctrine()->getRepository(Record::class)->find($id);
+        $record = $record = $this->recordRepository->ofId($id);
+        $user = $record->getUser();
         $record->setDistance(($request->get('distance')));
         $record->settime(($request->get('time')));
-
-        $entityManager->persist($record);
-        $entityManager->flush();
+        $this->recordRepository->add($record);
 
         return new RedirectResponse($this->urlGenerator->generate('home',['id' => $user->getId()]));
     }
 
     public function deleteRecord($id)
     {
-        $em = $this->getDoctrine()->getManager();
-        $recordRepo = $em->getRepository(Record::class)->find($id);
-        $user = $this->getUser();
+        $record =  $this->recordRepository->ofId($id);
+        $user = $record->getUser();
 
-        $em->remove($recordRepo);
-        $em->flush();
+        $this->recordRepository->remove($record);
 
         return new RedirectResponse($this->urlGenerator->generate('home',['id' => $user->getId()]));
 

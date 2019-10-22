@@ -1,12 +1,13 @@
 <?php
 
 
- namespace App\Repository\Interfaces;
+namespace App\Repository\Interfaces;
 
- use App\Entity\Record;
+use App\Entity\Record;
+use App\Filters\RecordFilter;
 
- interface RecordRepositoryInterface
- {
+interface RecordRepositoryInterface
+{
      /**
       * @param Record $user
       * @return Record
@@ -23,10 +24,10 @@
       * @param int $id
       * @return Record
       */
-     public function ofId(int $id): array;
+     public function ofId(int $id): ?Record;
 
      /**
       * @return Record[[
       */
-     public function filter(): array;
- }
+     public function filter(RecordFilter $filter): array;
+}
