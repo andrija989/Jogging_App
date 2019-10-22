@@ -10,24 +10,29 @@ interface RecordRepositoryInterface
 {
      /**
       * @param Record $user
+      *
       * @return Record
       */
      public function add(Record $user): Record;
 
      /**
       * @param Record $user
-      * @return mixed
       */
-     public function remove(Record $user);
+     public function remove(Record $user): void;
 
      /**
       * @param int $id
+      *
       * @return Record
+      *
+      * @throws RecordNotFoundException
       */
-     public function ofId(int $id): ?Record;
+     public function ofId(int $id): Record;
 
-     /**
-      * @return Record[[
-      */
+    /**
+     * @param RecordFilter $filter
+     *
+     * @return Record[]
+     */
      public function filter(RecordFilter $filter): array;
 }

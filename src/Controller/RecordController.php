@@ -3,14 +3,13 @@
 namespace App\Controller;
 
 use App\Entity\Record;
-use App\Filters\RecordFilter;
+use App\Filters\Builders\RecordFilterBuilder;
 use App\Repository\Interfaces\RecordRepositoryInterface;
 use App\Repository\Interfaces\UserRepositoryInterface;
 use App\Repository\RecordRepository;
 use App\Repository\UserRepository;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\RedirectResponse;
-use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 
@@ -32,43 +31,33 @@ class RecordController extends AbstractController
     private $userRepository;
 
     /**
-     * @var RecordFilter
-     */
-    private $filter;
-
-    /**
      * RecordController constructor.
      * @param UrlGeneratorInterface $urlGenerator
      * @param RecordRepositoryInterface $recordRepository
      * @param UserRepositoryInterface $userRepository
      */
-    public function __construct(UrlGeneratorInterface $urlGenerator, RecordRepositoryInterface $recordRepository, UserRepositoryInterface $userRepository, RecordFilter $filter)
+    public function __construct(UrlGeneratorInterface $urlGenerator, RecordRepositoryInterface $recordRepository, UserRepositoryInterface $userRepository)
     {
         $this->urlGenerator = $urlGenerator;
         $this->recordRepository = $recordRepository;
         $this->userRepository = $userRepository;
-        $this->filter = $filter;
     }
 
-    /**
-     * @Route("/record", name="record")
-     */
     public function index(Request $request, $id)
     {
-        $filter = new RecordFilter($id);
-        $user = $this->userRepository->ofId($id);
-        $filter->setDateFrom($request->get('dateFrom'));
-        $filter->setDateTo($request->get('dateTo'));
-        $reportDate = $request->get('week');
-        $records = $this->filter->getUserId();
+        $filter = RecordFilterBuilder::valueOf()
+            ->setUserId($id)
+            ->setDateFrom($request->get('dateFrom'))
+            ->setDateTo($request->get('dateTo'));
 
-        if (isset($filter)) {
-            $records = $this->recordRepository->filter($filter);
-        }
+        $reportDate = $request->get('week');
+        $user = $this->userRepository->ofId($id);
+        $records = $this->recordRepository->filter($filter->build());
 
         /**
          * Report getting with average speed and time
          */
+
         $averageTime= $this->recordRepository->averageTime($records, $reportDate);
         $averageDistance = $this->recordRepository->averageDistance($records,$reportDate);
         $weeks = $this->recordRepository->weeksNumber($records);
@@ -105,7 +94,6 @@ class RecordController extends AbstractController
 
     }
 
-
     public function updateRecord(Request $request,$id)
     {
         $record = $record = $this->recordRepository->ofId($id);
@@ -121,12 +109,8 @@ class RecordController extends AbstractController
     {
         $record =  $this->recordRepository->ofId($id);
         $user = $record->getUser();
-
         $this->recordRepository->remove($record);
 
         return new RedirectResponse($this->urlGenerator->generate('home',['id' => $user->getId()]));
-
     }
-
-
 }

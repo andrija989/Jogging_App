@@ -30,7 +30,6 @@
             </thead>
             <tbody>
                 {% for record in records %}
-
                     <tr>
                         <td>{{ record.getDate|date('Y-m-d H:i:s') }}</td>
                         <td>{{ record.getDistance }} km</td>
@@ -40,8 +39,6 @@
                             <a class="btn btn-primary" href="{{ path('edit',{ id : record.getId()})}}">Edit</a>
                         </td>
                     </tr>
-
-
                 {% endfor %}
             </tbody>
         </table>

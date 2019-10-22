@@ -9,20 +9,27 @@ use App\Repository\Interfaces\RecordRepositoryInterface;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\Common\Persistence\ManagerRegistry;
 
-/**
- * @method Record|null find($id, $lockMode = null, $lockVersion = null)
- * @method Record|null findOneBy(array $criteria, array $orderBy = null)
- * @method Record[]    findAll()
- * @method Record[]    findBy(array $criteria, array $orderBy = null, $limit = null, $offset = null)
- */
+
 class RecordRepository extends ServiceEntityRepository implements RecordRepositoryInterface
 {
+    /**
+     * RecordRepository constructor.
+     *
+     * @param ManagerRegistry $registry
+     */
     public function __construct(ManagerRegistry $registry)
     {
         parent::__construct($registry, Record::class);
     }
 
-    public function ofId(int $id): ?Record
+    /**
+     * @param int $id
+     *
+     * @return Record
+     *
+     * @throws \Doctrine\ORM\NonUniqueResultException
+     */
+    public function ofId(int $id): Record
     {
         return $this->createQueryBuilder('u')
             ->where("u.id = :id")
@@ -31,6 +38,14 @@ class RecordRepository extends ServiceEntityRepository implements RecordReposito
             ->getOneOrNullResult();
     }
 
+    /**
+     * @param Record $record
+     *
+     * @return Record
+     *
+     * @throws \Doctrine\ORM\ORMException
+     * @throws \Doctrine\ORM\OptimisticLockException
+     */
     public function add(Record $record): Record
     {
         $this->getEntityManager()->persist($record);
@@ -39,40 +54,37 @@ class RecordRepository extends ServiceEntityRepository implements RecordReposito
         return $record;
     }
 
-    public function remove(Record $record)
+    /**
+     * @param Record $record
+     *
+     * @throws \Doctrine\ORM\ORMException
+     * @throws \Doctrine\ORM\OptimisticLockException
+     */
+    public function remove(Record $record): void
     {
         $this->getEntityManager()->remove($record);
         $this->getEntityManager()->flush();
     }
 
+    /**
+     * @param RecordFilter $filter
+     * 
+     * @return array
+     */
     public function filter(RecordFilter $filter): array
     {
         $query = $this->createQueryBuilder('u');
 
-
-        if ($filter->getDateFrom() == null && $filter->getDateTo() == null)
-        {
-            $query = $this->createQueryBuilder('u');
+        if ($filter->getUserId()) {
+            $query->andWhere('u.user = :id')->setParameter('id', $filter->getUserId());
         }
 
-        if($filter->getDateFrom() !== null)
-        {
-            $query -> Where('u.date > :dateFrom')->setParameter('dateFrom', $filter->getDateFrom());
+        if ($filter->getDateTo()) {
+            $query->andWhere('u.date < :dateTo')->setParameter('dateTo', $filter->getDateTo());
         }
 
-        if($filter->getDateTo() !== null)
-        {
-            $query -> Where('u.date < :dateTo')->setParameter('dateTo', $filter->getDateTo());
-        }
-
-        if($filter->getDateFrom() !== null && $filter->getDateTo() !== null)
-        {
-            $query -> Where('u.date < :dateTo')->setParameter('dateTo', $filter->getDateTo())->andWhere('u.date > :dateFrom')->setParameter('dateFrom', $filter->getDateFrom());
-        }
-
-        if($filter->getUserId())
-        {
-            $query -> andWhere('u.user = :id')->setParameter('id', $filter->getUserId());
+        if ($filter->getDateFrom()) {
+            $query->andWhere('u.date > :dateFrom')->setParameter('dateFrom', $filter->getDateFrom());
         }
 
         return $query
@@ -89,7 +101,6 @@ class RecordRepository extends ServiceEntityRepository implements RecordReposito
             {
                 $time += $record->getTime();
                 $counter++;
-
             }
             $averageTime = $time / $counter;
         }
@@ -105,7 +116,6 @@ class RecordRepository extends ServiceEntityRepository implements RecordReposito
             {
                 $distance += $record->getDistance();
                 $counter++;
-
             }
             $averageDistance = $distance / $counter;
         }

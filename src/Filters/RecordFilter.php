@@ -2,6 +2,8 @@
 
 namespace App\Filters;
 
+use DateTime;
+
 class RecordFilter
 {
     /**
@@ -10,17 +12,22 @@ class RecordFilter
     private $userId;
 
     /**
-     * @var null $dateFrom;
+     * @var DateTime $dateFrom;
      */
     private $dateFrom;
 
     /**
-     * @var null $dateTo;
+     * @var DateTime $dateTo;
      */
     private $dateTo;
 
-
-    public function __construct(int $userId = null, $dateFrom = null, $dateTo = null)
+    /**
+     * RecordFilter constructor.
+     * @param int|null $userId
+     * @param DateTime $dateFrom
+     * @param DateTime $dateTo
+     */
+    public function __construct(int $userId, $dateFrom = null, $dateTo = null)
     {
         $this->userId = $userId;
         $this->dateFrom = $dateFrom;
@@ -28,33 +35,48 @@ class RecordFilter
     }
 
     /**
-     * @return int
+     * @return int|null;
      */
     public function getUserId()
     {
         return $this->userId;
     }
 
+    /**
+     * @param $userId;
+     */
     public function setUserId($userId)
     {
         $this->userId = $userId;
     }
 
+    /**
+     * @return null;
+     */
     public function getDateFrom()
     {
         return $this->dateFrom;
     }
 
+    /**
+     * @param DateTime $dateFrom;
+     */
     public function setDateFrom($dateFrom)
     {
         $this->dateFrom = $dateFrom;
     }
 
-    public function  getDateTo()
+    /**
+     * @return null;
+     */
+    public function getDateTo()
     {
         return $this->dateTo;
     }
 
+    /**
+     * @param $dateTo;
+     */
     public function setDateTo($dateTo)
     {
         $this->dateTo = $dateTo;
