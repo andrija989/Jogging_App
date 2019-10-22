@@ -30,7 +30,7 @@ class AdministratorController extends AbstractController
      */
     public function index()
     {
-        $users = $this->userRepository->findAll();
+        $users = $this->userRepository->filter();
 
         return $this->render('Users/administrator.html.twig', ['users' => $users]);
     }
@@ -46,7 +46,7 @@ class AdministratorController extends AbstractController
     public function updateUser(Request $request,$id)
     {
         $user = $this->userRepository->ofId($id);
-        $users = $this->userRepository->findAll();
+        $users = $this->userRepository->filter();
         $user->setRoles(($request->get('role')));
 
         $this->userRepository->add($user);

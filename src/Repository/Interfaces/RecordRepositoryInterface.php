@@ -8,12 +8,6 @@
  interface RecordRepositoryInterface
  {
      /**
-      * @param int $id
-      * @return Record
-      */
-     public function ofId(int $id): array;
-
-     /**
       * @param Record $user
       * @return Record
       */
@@ -24,4 +18,15 @@
       * @return mixed
       */
      public function remove(Record $user);
+
+     /**
+      * @param int $id
+      * @return Record
+      */
+     public function ofId(int $id): array;
+
+     /**
+      * @return Record[[
+      */
+     public function filter(): array;
  }

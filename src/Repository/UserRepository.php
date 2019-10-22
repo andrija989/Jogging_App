@@ -45,6 +45,12 @@ class UserRepository extends ServiceEntityRepository implements UserRepositoryIn
         $this->getEntityManager()->flush();
     }
 
+    public function filter(): array
+    {
+        return $this->createQueryBuilder('u')
+            ->getQuery()
+            ->getResult();
+    }
 
     /*
     public function findOneBySomeField($value): ?User
