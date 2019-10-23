@@ -51,7 +51,7 @@ class RecordFilterBuilder
     }
 
     /**
-     * @param string $dateFrom
+     * @param string|null $dateFrom
      *
      * @return RecordFilterBuilder
      *
@@ -59,8 +59,7 @@ class RecordFilterBuilder
      */
     public function setDateFrom(string $dateFrom = null): RecordFilterBuilder
     {
-        if($dateFrom)
-        {
+        if ($dateFrom) {
             $this->dateFrom = new DateTime($dateFrom);
         }
 
@@ -68,7 +67,7 @@ class RecordFilterBuilder
     }
 
     /**
-     * @param string $dateTo
+     * @param string|null $dateTo
      *
      * @return RecordFilterBuilder
      *
@@ -76,7 +75,7 @@ class RecordFilterBuilder
      */
     public function setDateTo(string $dateTo = null): RecordFilterBuilder
     {
-        if ($dateTo){
+        if ($dateTo) {
             $this->dateTo = new DateTime($dateTo);
         }
 

@@ -2,32 +2,27 @@
 
 namespace App\Controller;
 
-use App\Exceptions\UserNotFoundException;
-use App\Repository\Interfaces\UserRepositoryInterface;
-use Doctrine\ORM\NonUniqueResultException;
-use Doctrine\ORM\OptimisticLockException;
-use Doctrine\ORM\ORMException;
+use App\Services\UserService;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
-use App\Repository\UserRepository;
 
 class AdministratorController extends AbstractController
 {
     /**
-     * @var UserRepository $userRepository
+     * @var UserService $userService
      */
-    private $userRepository;
+    private $userService;
 
     /**
      * AdministratorController constructor.
      *
-     * @param UserRepositoryInterface $userRepository
+     * @param UserService $userService
      */
-    public function __construct(UserRepositoryInterface $userRepository)
+    public function __construct(UserService $userService)
     {
-        $this->userRepository = $userRepository;
+        $this->userService = $userService;
     }
 
     /**
@@ -35,7 +30,7 @@ class AdministratorController extends AbstractController
      */
     public function index()
     {
-        $users = $this->userRepository->filter();
+        $users = $this->userService->showUsers();
 
         return $this->render('Users/administrator.html.twig', ['users' => $users]);
     }
@@ -44,19 +39,12 @@ class AdministratorController extends AbstractController
      * @param int $id
      *
      * @return RedirectResponse
-     *
-     * @throws NonUniqueResultException
-     * @throws ORMException
-     * @throws OptimisticLockException
-     * @throws UserNotFoundException
      */
     public function deleteUser(int $id)
     {
-        $user = $this->userRepository->ofId($id);
-        $this->userRepository->remove($user);
+        $this->userService->deleteUser($id);
 
         return $this->redirectToRoute('administrator-page');
-
     }
 
     /**
@@ -64,19 +52,13 @@ class AdministratorController extends AbstractController
      * @param int $id
      *
      * @return Response
-     *
-     * @throws NonUniqueResultException
-     * @throws ORMException
-     * @throws OptimisticLockException
-     * @throws UserNotFoundException
      */
     public function updateUser(Request $request,int $id)
     {
-        $user = $this->userRepository->ofId($id);
-        $users = $this->userRepository->filter();
-        $user->setRoles(($request->get('role')));
+        $users = $this->userService->showUsers();
+        $role = $request->get('role');
 
-        $this->userRepository->add($user);
+        $this->userService->updateUserRole($id, $role);
 
         return $this->render('Users/administrator.html.twig', ['users' => $users]);
     }

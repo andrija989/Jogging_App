@@ -4,11 +4,8 @@ namespace App\Controller;
 
 use App\Exceptions\RecordNotFoundException;
 use App\Exceptions\UserNotFoundException;
-use App\Filters\Builders\RecordFilterBuilder;
-use App\Repository\Interfaces\RecordRepositoryInterface;
-use App\Repository\Interfaces\UserRepositoryInterface;
-use App\Repository\RecordRepository;
-use App\Repository\UserRepository;
+use App\Services\RecordService;
+use App\Services\UserService;
 use Doctrine\ORM\NonUniqueResultException;
 use Doctrine\ORM\ORMException;
 use Exception;
@@ -26,27 +23,27 @@ class RecordController extends AbstractController
     private $urlGenerator;
 
     /**
-     * @var RecordRepository $recordRepository
+     * @var RecordService $recordService
      */
-    private $recordRepository;
+    private $recordService;
 
     /**
-     * @var UserRepository $userRepository
+     * @var UserService $userService
      */
-    private $userRepository;
+    private $userService;
 
     /**
      * RecordController constructor.
      *
      * @param UrlGeneratorInterface $urlGenerator
-     * @param RecordRepositoryInterface $recordRepository
-     * @param UserRepositoryInterface $userRepository
+     * @param RecordService $recordService
+     * @param UserService $userService
      */
-    public function __construct(UrlGeneratorInterface $urlGenerator, RecordRepositoryInterface $recordRepository, UserRepositoryInterface $userRepository)
+    public function __construct(UrlGeneratorInterface $urlGenerator, RecordService $recordService, UserService $userService)
     {
         $this->urlGenerator = $urlGenerator;
-        $this->recordRepository = $recordRepository;
-        $this->userRepository = $userRepository;
+        $this->recordService = $recordService;
+        $this->userService = $userService;
     }
 
     /**
@@ -55,49 +52,29 @@ class RecordController extends AbstractController
      *
      * @return Response
      *
-     * @throws NonUniqueResultException
-     * @throws UserNotFoundException
      * @throws Exception
      */
     public function index(Request $request,int $id)
     {
-        $filter = RecordFilterBuilder::valueOf()
-            ->setUserId($id)
-            ->setDateFrom($request->get('dateFrom'))
-            ->setDateTo($request->get('dateTo'));
-
+        $dateFrom = $request->get('dateFrom');
+        $dateTo = $request->get('dateTo');
         $reportDate = $request->get('week');
-        $user = $this->userRepository->ofId($id);
-        $records = $this->recordRepository->filter($filter->build());
+        $user = $this->userService->getUser($id);
+        $records = $this->recordService->getRecords($id, $dateFrom, $dateTo);
 
         /**
          * Report getting with average speed and time
          */
-        $time = 0;
         $averageTime = 0;
-        $distance = 0;
+        if ($reportDate){
+            $averageTime = $this->recordService->averageTime($records,$reportDate);
+        }
         $averageDistance = 0;
-        $counter = 0.0001;
+        if ($reportDate){
+            $averageDistance = $this->recordService->averageDistance($records, $reportDate);
+        }
 
-        foreach($records as $record) {
-            if ( $record->getDate()->format('W') == $reportDate)
-            {
-                $distance += $record->getDistance();
-                $time += $record->getTime();
-                $counter++;
-            }
-            $averageTime = $time / $counter;
-            $averageDistance = $distance / $counter;
-        }
-        /**
-         * Getting weeks for dropdown menu in reports
-         */
-        $weeks = [];
-        foreach ($records as $record)
-        {
-            $weeks[] += $record->getDate()->format('W');
-        }
-        $weeks = array_unique($weeks);
+        $weeks = $this->recordService->getWeeks($records);
 
         return $this->render('record/record.html.twig', [
             'user' => $user,
@@ -123,12 +100,12 @@ class RecordController extends AbstractController
         $date = new \DateTime();
         $distance = $request->get('distance');
         $time = $request->get('time');
-        $user = $this->userRepository->ofId($id);
+        $user = $this->userService->getUser($id);
 
         $record = $user->createRecord($date, $distance, $time);
-        $this->recordRepository->add($record);
+        $this->recordService->storeRecord($record);
 
-        return new RedirectResponse($this->urlGenerator->generate('home',['id' => $user->getId()]));
+        return new RedirectResponse($this->urlGenerator->generate('home',['id' => $id]));
     }
 
     /**
@@ -141,7 +118,7 @@ class RecordController extends AbstractController
      */
     public function edit(int $id)
     {
-       $record = $this->recordRepository->ofId($id);
+       $record = $this->recordService->editRecord($id);
 
        return $this->render('record/edit.html.twig', ['record' => $record]);
 
@@ -160,13 +137,12 @@ class RecordController extends AbstractController
      */
     public function updateRecord(Request $request,int $id)
     {
-        $record = $record = $this->recordRepository->ofId($id);
-        $user = $record->getUser();
-        $record->setDistance(($request->get('distance')));
-        $record->settime(($request->get('time')));
-        $this->recordRepository->add($record);
+        $distance = $request->get('distance');
+        $time = $request->get('time');
+        $this->recordService->updateRecord($id, $distance, $time);
+        $record = $this->recordService->getRecord($id);
 
-        return new RedirectResponse($this->urlGenerator->generate('home',['id' => $user->getId()]));
+        return new RedirectResponse($this->urlGenerator->generate('home',['id' => $record->getUser()->getId()]));
     }
 
     /**
@@ -175,15 +151,13 @@ class RecordController extends AbstractController
      * @return RedirectResponse
      *
      * @throws NonUniqueResultException
-     * @throws ORMException
      * @throws RecordNotFoundException
      */
     public function deleteRecord($id)
     {
-        $record =  $this->recordRepository->ofId($id);
-        $user = $record->getUser();
-        $this->recordRepository->remove($record);
+        $record = $this->recordService->getRecord($id);
+        $this->recordService->deleteRecordById($id);
 
-        return new RedirectResponse($this->urlGenerator->generate('home',['id' => $user->getId()]));
+        return new RedirectResponse($this->urlGenerator->generate('home',['id' => $record->getUser()->getId()]));
     }
 }
