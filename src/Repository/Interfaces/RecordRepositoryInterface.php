@@ -1,10 +1,10 @@
 <?php
 
-
 namespace App\Repository\Interfaces;
 
 use App\Entity\Record;
 use App\Filters\RecordFilter;
+use App\Exceptions\RecordNotFoundException;
 
 interface RecordRepositoryInterface
 {

@@ -21,6 +21,13 @@ class RegisterController extends AbstractController
      */
     private $urlGenerator;
 
+    /**
+     * RegisterController constructor.
+     *
+     * @param UserPasswordEncoderInterface $passwordEncoder
+     *
+     * @param UrlGeneratorInterface $urlGenerator
+     */
     public function __construct(UserPasswordEncoderInterface $passwordEncoder,UrlGeneratorInterface $urlGenerator)
     {
 
@@ -28,6 +35,9 @@ class RegisterController extends AbstractController
         $this->urlGenerator = $urlGenerator;
     }
 
+    /**
+     * @return Response
+     */
     public function index()
     {
         return $this->render('security/register.html.twig', [
@@ -35,6 +45,10 @@ class RegisterController extends AbstractController
         ]);
     }
 
+    /**
+     * @param Request $request
+     * @return Response
+     */
     public function store(Request $request): Response
     {
         $entityManager = $this->getDoctrine()->getManager();

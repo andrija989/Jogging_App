@@ -6,23 +6,30 @@ use App\Entity\User;
 use App\Repository\Interfaces\UserRepositoryInterface;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\Common\Persistence\ManagerRegistry;
+use Doctrine\ORM\NonUniqueResultException;
+use Doctrine\ORM\OptimisticLockException;
 use Doctrine\ORM\ORMException;
 
-/**
- * @method User|null find($id, $lockMode = null, $lockVersion = null)
- * @method User|null findOneBy(array $criteria, array $orderBy = null)
- * @method User[]    findAll()
- * @method User[]    findBy(array $criteria, array $orderBy = null, $limit = null, $offset = null)
- */
 class UserRepository extends ServiceEntityRepository implements UserRepositoryInterface
 {
+    /**
+     * UserRepository constructor.
+     *
+     * @param ManagerRegistry $registry
+     */
     public function __construct(ManagerRegistry $registry)
     {
         parent::__construct($registry, User::class);
     }
 
-
-    public function ofId(int $id): ?User
+    /**
+     * @param int $id
+     *
+     * @return User
+     *
+     * @throws NonUniqueResultException
+     */
+    public function ofId(int $id): User
     {
         return $this->createQueryBuilder('u')
             ->where("u.id = :id")
@@ -31,6 +38,15 @@ class UserRepository extends ServiceEntityRepository implements UserRepositoryIn
             ->getOneOrNullResult();
     }
 
+    /**
+     * @param User $user
+     *
+     * @return User
+     *
+     * @throws ORMException
+     *
+     * @throws OptimisticLockException
+     */
     public function add(User $user): User
     {
         $this->getEntityManager()->persist($user);
@@ -39,12 +55,24 @@ class UserRepository extends ServiceEntityRepository implements UserRepositoryIn
         return $user;
     }
 
-    public function remove(User $user)
+    /**
+     * @param User $user
+     *
+     * @return mixed|void
+     *
+     * @throws ORMException
+     *
+     * @throws OptimisticLockException
+     */
+    public function remove(User $user): void
     {
         $this->getEntityManager()->remove($user);
         $this->getEntityManager()->flush();
     }
 
+    /**
+     * @return array
+     */
     public function filter(): array
     {
         return $this->createQueryBuilder('u')

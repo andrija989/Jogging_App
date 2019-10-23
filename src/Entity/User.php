@@ -2,8 +2,6 @@
 
 namespace App\Entity;
 
-use Doctrine\Common\Collections\ArrayCollection;
-use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Security\Core\User\UserInterface;
 
@@ -13,6 +11,8 @@ use Symfony\Component\Security\Core\User\UserInterface;
 class User implements UserInterface
 {
     /**
+     * @var int $id
+     *
      * @ORM\Id()
      * @ORM\GeneratedValue()
      * @ORM\Column(type="integer")
@@ -40,15 +40,6 @@ class User implements UserInterface
      */
     private $password;
 
-    /**
-     * @ORM\OneToMany(targetEntity="App\Entity\Record", mappedBy="user", cascade={"remove"})
-     */
-    private $records;
-
-    public function __construct()
-    {
-        $this->records = new ArrayCollection();
-    }
 
     /**
      * @return int
@@ -68,21 +59,12 @@ class User implements UserInterface
 
     /**
      * @param string $email
-     * @return $this
      */
-    public function setEmail(string $email): self
+    public function setEmail(string $email): void
     {
         $this->email = $email;
-
-        return $this;
     }
 
-    /**
-     * A visual identifier that represents this user.
-     *
-     * @see UserInterface
-     *
-     */
     /**
      * @return string
      */
@@ -92,9 +74,6 @@ class User implements UserInterface
     }
 
     /**
-     * @see UserInterface
-     */
-    /**
      * @return array
      */
     public function getRoles(): array
@@ -103,14 +82,11 @@ class User implements UserInterface
     }
 
     /**
-     * @param $roles
-     * @return $this
+     * @param $roles string
      */
-    public function setRoles($roles): self
+    public function setRoles($roles): void
     {
         $this->roles = $roles;
-
-        return $this;
     }
 
     /**
@@ -126,13 +102,10 @@ class User implements UserInterface
 
     /**
      * @param string $password
-     * @return $this
-     */
-    public function setPassword(string $password): self
+    */
+    public function setPassword(string $password)
     {
         $this->password = $password;
-
-        return $this;
     }
 
     /**
@@ -157,47 +130,5 @@ class User implements UserInterface
         return new Record(
             $this
         );
-    }
-
-    /**
-     * @return Collection|Record[]
-     */
-    /**
-     * @return Collection
-     */
-    public function getRecords(): Collection
-    {
-        return $this->records;
-    }
-
-    /**
-     * @param Record $record
-     * @return $this
-     */
-    public function addRecord(Record $record): self
-    {
-        if (!$this->records->contains($record)) {
-            $this->records[] = $record;
-            $record->setUser($this);
-        }
-
-        return $this;
-    }
-
-    /**
-     * @param Record $record
-     * @return $this
-     */
-    public function removeRecord(Record $record): self
-    {
-        if ($this->records->contains($record)) {
-            $this->records->removeElement($record);
-            // set the owning side to null (unless already changed)
-            if ($record->getUser() === $this) {
-                $record->setUser(null);
-            }
-        }
-
-        return $this;
     }
 }

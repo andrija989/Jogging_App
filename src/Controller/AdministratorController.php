@@ -2,11 +2,14 @@
 
 namespace App\Controller;
 
-use App\Entity\User;
 use App\Repository\Interfaces\UserRepositoryInterface;
+use Doctrine\ORM\NonUniqueResultException;
+use Doctrine\ORM\OptimisticLockException;
+use Doctrine\ORM\ORMException;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
+use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Request;
-use Symfony\Component\Routing\Annotation\Route;
+use Symfony\Component\HttpFoundation\Response;
 use App\Repository\UserRepository;
 
 class AdministratorController extends AbstractController
@@ -18,6 +21,7 @@ class AdministratorController extends AbstractController
 
     /**
      * AdministratorController constructor.
+     *
      * @param UserRepositoryInterface $userRepository
      */
     public function __construct(UserRepositoryInterface $userRepository)
@@ -26,7 +30,7 @@ class AdministratorController extends AbstractController
     }
 
     /**
-     * @Route("/administrator", name="administrator")
+     * @return Response
      */
     public function index()
     {
@@ -35,6 +39,15 @@ class AdministratorController extends AbstractController
         return $this->render('Users/administrator.html.twig', ['users' => $users]);
     }
 
+    /**
+     * @param int $id
+     *
+     * @return RedirectResponse
+     *
+     * @throws NonUniqueResultException
+     * @throws ORMException
+     * @throws OptimisticLockException
+     */
     public function deleteUser($id)
     {
         $user = $this->userRepository->ofId($id);
@@ -43,6 +56,18 @@ class AdministratorController extends AbstractController
         return $this->redirectToRoute('administrator-page');
 
     }
+
+    /**
+     * @param Request $request
+     *
+     * @param int $id
+     *
+     * @return Response
+     *
+     * @throws NonUniqueResultException
+     * @throws ORMException
+     * @throws OptimisticLockException
+     */
     public function updateUser(Request $request,$id)
     {
         $user = $this->userRepository->ofId($id);

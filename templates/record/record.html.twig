@@ -38,6 +38,11 @@
                         <td>
                             <a class="btn btn-primary" href="{{ path('edit',{ id : record.getId()})}}">Edit</a>
                         </td>
+                        <td>
+                            <form method="POST" action="{{ path('record-delete',{'id': record.getId()})}}" class="delete-form">
+                                <button type="submit" class="btn btn-primary">Delete</button>
+                            </form>
+                        </td>
                     </tr>
                 {% endfor %}
             </tbody>

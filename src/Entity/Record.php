@@ -10,6 +10,8 @@ use Doctrine\ORM\Mapping as ORM;
 class Record
 {
     /**
+     * @var int $id
+     *
      * @ORM\Id()
      * @ORM\GeneratedValue()
      * @ORM\Column(type="integer")
@@ -24,7 +26,7 @@ class Record
     private $date;
 
     /**
-     *@var int $distance
+     * @var int $distance
      *
      * @ORM\Column(type="integer")
      */
@@ -38,21 +40,23 @@ class Record
     private $time;
 
     /**
+     * @var User $user
+     *
      * @ORM\ManyToOne(targetEntity="App\Entity\User", inversedBy="records")
      * @ORM\JoinColumn(nullable=false)
      */
     private $user;
 
     /**
-     * @return int|null
+     * @return int
      */
-    public function getId(): ?int
+    public function getId(): int
     {
         return $this->id;
     }
 
     /**
-     * @return \DateTimeInterface|null
+     * @return \DateTimeInterface
      */
     public function getDate(): ?\DateTimeInterface
     {
@@ -61,69 +65,57 @@ class Record
 
     /**
      * @param \DateTimeInterface $date
-     * @return $this
      */
-    public function setDate(\DateTimeInterface $date): self
+    public function setDate(\DateTimeInterface $date): void
     {
         $this->date = $date;
-
-        return $this;
     }
 
     /**
-     * @return int|null
+     * @return int
      */
-    public function getDistance(): ?int
+    public function getDistance(): int
     {
         return $this->distance;
     }
 
     /**
      * @param int $distance
-     * @return $this
      */
-    public function setDistance(int $distance): self
+    public function setDistance(int $distance): void
     {
         $this->distance = $distance;
-
-        return $this;
     }
 
     /**
-     * @return int|null
+     * @return int
      */
-    public function getTime(): ?int
+    public function getTime(): int
     {
         return $this->time;
     }
 
     /**
      * @param int $time
-     * @return $this
      */
-    public function setTime(int $time): self
+    public function setTime(int $time): void
     {
         $this->time = $time;
-
-        return $this;
     }
 
     /**
-     * @return User|null
+     * @return User
      */
-    public function getUser(): ?User
+    public function getUser(): User
     {
         return $this->user;
     }
 
     /**
-     * @param User|null $user
-     * @return $this
+     * @param User $user
      */
-    public function setUser(?User $user): self
+    public function setUserId(?User $user): void
     {
         $this->user = $user;
-
-        return $this;
     }
 }

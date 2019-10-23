@@ -3,12 +3,13 @@
 namespace App\Repository;
 
 use App\Entity\Record;
-use App\Entity\User;
+use App\Exceptions\RecordNotFoundException;
 use App\Filters\RecordFilter;
 use App\Repository\Interfaces\RecordRepositoryInterface;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\Common\Persistence\ManagerRegistry;
-
+use Doctrine\ORM\NonUniqueResultException;
+use Doctrine\ORM\ORMException;
 
 class RecordRepository extends ServiceEntityRepository implements RecordRepositoryInterface
 {
@@ -27,15 +28,21 @@ class RecordRepository extends ServiceEntityRepository implements RecordReposito
      *
      * @return Record
      *
-     * @throws \Doctrine\ORM\NonUniqueResultException
+     * @throws RecordNotFoundException
+     * @throws NonUniqueResultException
      */
     public function ofId(int $id): Record
     {
-        return $this->createQueryBuilder('u')
+        $query = $this->createQueryBuilder('u')
             ->where("u.id = :id")
             ->setParameter('id', $id)
             ->getQuery()
             ->getOneOrNullResult();
+        if($query) {
+            return $query;
+        } else {
+            throw new RecordNotFoundException();
+        }
     }
 
     /**
@@ -43,8 +50,7 @@ class RecordRepository extends ServiceEntityRepository implements RecordReposito
      *
      * @return Record
      *
-     * @throws \Doctrine\ORM\ORMException
-     * @throws \Doctrine\ORM\OptimisticLockException
+     * @throws ORMException
      */
     public function add(Record $record): Record
     {
@@ -68,7 +74,7 @@ class RecordRepository extends ServiceEntityRepository implements RecordReposito
 
     /**
      * @param RecordFilter $filter
-     * 
+     *
      * @return array
      */
     public function filter(RecordFilter $filter): array
@@ -76,61 +82,25 @@ class RecordRepository extends ServiceEntityRepository implements RecordReposito
         $query = $this->createQueryBuilder('u');
 
         if ($filter->getUserId()) {
-            $query->andWhere('u.user = :id')->setParameter('id', $filter->getUserId());
+            $query
+                ->andWhere('u.user = :id')
+                ->setParameter('id', $filter->getUserId());
         }
 
         if ($filter->getDateTo()) {
-            $query->andWhere('u.date < :dateTo')->setParameter('dateTo', $filter->getDateTo());
+            $query
+                ->andWhere('u.date < :dateTo')
+                ->setParameter('dateTo', $filter->getDateTo());
         }
 
         if ($filter->getDateFrom()) {
-            $query->andWhere('u.date > :dateFrom')->setParameter('dateFrom', $filter->getDateFrom());
+            $query
+                ->andWhere('u.date > :dateFrom')
+                ->setParameter('dateFrom', $filter->getDateFrom());
         }
 
         return $query
             ->getQuery()
             ->getResult();
     }
-
-    public function averageTime($records,$reportDate)
-    {   $time = 0;
-        $averageTime = 0;
-        $counter = 0.0001;
-        foreach($records as $record) {
-            if ( $record->getDate()->format('W') == $reportDate)
-            {
-                $time += $record->getTime();
-                $counter++;
-            }
-            $averageTime = $time / $counter;
-        }
-        return $averageTime;
-    }
-
-    public function averageDistance($records,$reportDate)
-    {   $distance = 0;
-        $averageDistance = 0;
-        $counter = 0.0001;
-        foreach($records as $record) {
-            if ( $record->getDate()->format('W') == $reportDate)
-            {
-                $distance += $record->getDistance();
-                $counter++;
-            }
-            $averageDistance = $distance / $counter;
-        }
-        return $averageDistance;
-    }
-
-    public function weeksNumber($records)
-    {
-        $weeks = [];
-        foreach ($records as $record)
-        {
-            $weeks[] += $record->getDate()->format('W');
-        }
-        $weeks = array_unique($weeks);
-        return $weeks;
-    }
-
 }

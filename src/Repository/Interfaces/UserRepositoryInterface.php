@@ -8,22 +8,22 @@ interface UserRepositoryInterface
 {
     /**
      * @param User $user
+     *
      * @return User
      */
     public function add(User $user): User;
 
     /**
      * @param User $user
-     * @return mixed
      */
+    public function remove(User $user): void;
 
-    public function remove(User $user);
     /**
      * @param int $id
+     *
      * @return User
      */
-
-    public function ofId(int $id): ?User;
+    public function ofId(int $id): User;
 
     /**
      * @return User[]
