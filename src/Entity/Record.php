@@ -2,6 +2,7 @@
 
 namespace App\Entity;
 
+use DateTime;
 use Doctrine\ORM\Mapping as ORM;
 
 /**
@@ -19,7 +20,7 @@ class Record
     private $id;
 
     /**
-     * @var \DateTimeImmutable $date
+     * @var DateTime $date
      *
      * @ORM\Column(type="datetime")
      */
@@ -48,6 +49,26 @@ class Record
     private $user;
 
     /**
+     * Record constructor.
+     *
+     * @param DateTime $date
+     * @param int $distance
+     * @param int $time
+     * @param User $user
+     */
+    public function __construct(
+        DateTime $date,
+        int $distance,
+        int $time,
+        User $user
+    ) {
+        $this->date = $date;
+        $this->distance = $distance;
+        $this->time = $time;
+        $this->user = $user;
+    }
+
+    /**
      * @return int
      */
     public function getId(): int
@@ -56,17 +77,17 @@ class Record
     }
 
     /**
-     * @return \DateTimeInterface
+     * @return DateTime
      */
-    public function getDate(): ?\DateTimeInterface
+    public function getDate(): DateTime
     {
         return $this->date;
     }
 
     /**
-     * @param \DateTimeInterface $date
+     * @param DateTime $date
      */
-    public function setDate(\DateTimeInterface $date): void
+    public function setDate(DateTime $date): void
     {
         $this->date = $date;
     }
@@ -109,13 +130,5 @@ class Record
     public function getUser(): User
     {
         return $this->user;
-    }
-
-    /**
-     * @param User $user
-     */
-    public function setUserId(?User $user): void
-    {
-        $this->user = $user;
     }
 }

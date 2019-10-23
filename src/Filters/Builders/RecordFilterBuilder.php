@@ -4,6 +4,7 @@ namespace App\Filters\Builders;
 
 use App\Filters\RecordFilter;
 use DateTime;
+use Exception;
 
 class RecordFilterBuilder
 {
@@ -22,6 +23,9 @@ class RecordFilterBuilder
      */
     private $dateTo;
 
+    /**
+     * RecordFilterBuilder constructor.
+     */
     public function __construct()
     {
     }
@@ -36,9 +40,10 @@ class RecordFilterBuilder
 
     /**
      * @param  int $userId
+     *
      * @return RecordFilterBuilder
      */
-    public function setUserId($userId): RecordFilterBuilder
+    public function setUserId(int $userId): RecordFilterBuilder
     {
         $this->userId = $userId;
 
@@ -46,23 +51,34 @@ class RecordFilterBuilder
     }
 
     /**
-     * @param DateTime $dateFrom
+     * @param string $dateFrom
+     *
      * @return RecordFilterBuilder
+     *
+     * @throws Exception
      */
-    public function setDateFrom($dateFrom): RecordFilterBuilder
+    public function setDateFrom(string $dateFrom = null): RecordFilterBuilder
     {
-        $this->dateFrom = $dateFrom;
+        if($dateFrom)
+        {
+            $this->dateFrom = new DateTime($dateFrom);
+        }
 
         return $this;
     }
 
     /**
-     * @param DateTime $dateTo
-     * @return $this
+     * @param string $dateTo
+     *
+     * @return RecordFilterBuilder
+     *
+     * @throws Exception
      */
-    public function  setDateTo($dateTo)
+    public function setDateTo(string $dateTo = null): RecordFilterBuilder
     {
-        $this->dateTo = $dateTo;
+        if ($dateTo){
+            $this->dateTo = new DateTime($dateTo);
+        }
 
         return $this;
     }

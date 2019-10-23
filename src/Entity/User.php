@@ -2,6 +2,7 @@
 
 namespace App\Entity;
 
+use DateTime;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Security\Core\User\UserInterface;
 
@@ -39,7 +40,6 @@ class User implements UserInterface
      * @ORM\Column(type="string")
      */
     private $password;
-
 
     /**
      * @return int
@@ -90,9 +90,6 @@ class User implements UserInterface
     }
 
     /**
-     * @see UserInterface
-     */
-    /**
      * @return string
      */
     public function getPassword(): string
@@ -125,10 +122,15 @@ class User implements UserInterface
         // $this->plainPassword = null;
     }
 
-    public function createRecord(): Record
+    /**
+     * @param DateTime $date
+     * @param int $time
+     * @param int $distance
+     *
+     * @return Record
+     */
+    public function createRecord(DateTime $date, int $time, int $distance): Record
     {
-        return new Record(
-            $this
-        );
+        return new Record($date, $time, $distance, $this);
     }
 }

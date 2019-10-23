@@ -25,14 +25,12 @@
                     {% for role in user.roles %}
                     <td>{{ role }}</td>
                     {% endfor %}
-
                     <td>
                         {% if is_granted('ROLE_USER_MANAGER') == false %}
                         <form method="POST" action="{{ path('administrator-delete',{'id': user.getId()})}}" class="delete-form">
                             <button type="submit" class="btn btn-primary">Delete user</button>
                         </form>
                     </td>
-
                     <td>
                         <form method="POST" action="{{ path('administrator-update',{'id': user.getId()})}}" class="update-form">
                             <select  id="role" name="role">

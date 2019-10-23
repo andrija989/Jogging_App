@@ -3,11 +3,11 @@
 namespace App\Repository;
 
 use App\Entity\User;
+use App\Exceptions\UserNotFoundException;
 use App\Repository\Interfaces\UserRepositoryInterface;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\Common\Persistence\ManagerRegistry;
 use Doctrine\ORM\NonUniqueResultException;
-use Doctrine\ORM\OptimisticLockException;
 use Doctrine\ORM\ORMException;
 
 class UserRepository extends ServiceEntityRepository implements UserRepositoryInterface
@@ -28,14 +28,21 @@ class UserRepository extends ServiceEntityRepository implements UserRepositoryIn
      * @return User
      *
      * @throws NonUniqueResultException
+     * @throws UserNotFoundException
      */
     public function ofId(int $id): User
     {
-        return $this->createQueryBuilder('u')
+        $user = $this->createQueryBuilder('u')
             ->where("u.id = :id")
             ->setParameter('id', $id)
             ->getQuery()
             ->getOneOrNullResult();
+
+        if (!$user) {
+            throw new UserNotFoundException();
+        }
+
+        return $user;
     }
 
     /**
@@ -44,8 +51,6 @@ class UserRepository extends ServiceEntityRepository implements UserRepositoryIn
      * @return User
      *
      * @throws ORMException
-     *
-     * @throws OptimisticLockException
      */
     public function add(User $user): User
     {
@@ -58,11 +63,7 @@ class UserRepository extends ServiceEntityRepository implements UserRepositoryIn
     /**
      * @param User $user
      *
-     * @return mixed|void
-     *
      * @throws ORMException
-     *
-     * @throws OptimisticLockException
      */
     public function remove(User $user): void
     {
@@ -71,7 +72,7 @@ class UserRepository extends ServiceEntityRepository implements UserRepositoryIn
     }
 
     /**
-     * @return array
+     * @return User[]
      */
     public function filter(): array
     {

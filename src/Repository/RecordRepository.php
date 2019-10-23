@@ -33,16 +33,17 @@ class RecordRepository extends ServiceEntityRepository implements RecordReposito
      */
     public function ofId(int $id): Record
     {
-        $query = $this->createQueryBuilder('u')
+        $record = $this->createQueryBuilder('u')
             ->where("u.id = :id")
             ->setParameter('id', $id)
             ->getQuery()
             ->getOneOrNullResult();
-        if($query) {
-            return $query;
-        } else {
+
+        if (!$record) {
             throw new RecordNotFoundException();
         }
+
+        return $record;
     }
 
     /**
@@ -63,8 +64,7 @@ class RecordRepository extends ServiceEntityRepository implements RecordReposito
     /**
      * @param Record $record
      *
-     * @throws \Doctrine\ORM\ORMException
-     * @throws \Doctrine\ORM\OptimisticLockException
+     * @throws ORMException
      */
     public function remove(Record $record): void
     {
@@ -75,7 +75,7 @@ class RecordRepository extends ServiceEntityRepository implements RecordReposito
     /**
      * @param RecordFilter $filter
      *
-     * @return array
+     * @return Record[]
      */
     public function filter(RecordFilter $filter): array
     {

@@ -23,7 +23,8 @@ class RecordFilter
 
     /**
      * RecordFilter constructor.
-     * @param int|null $userId
+     *
+     * @param int $userId
      * @param DateTime $dateFrom
      * @param DateTime $dateTo
      */
@@ -35,23 +36,15 @@ class RecordFilter
     }
 
     /**
-     * @return int|null;
+     * @return int;
      */
-    public function getUserId()
+    public function getUserId(): int
     {
         return $this->userId;
     }
 
     /**
-     * @param $userId;
-     */
-    public function setUserId($userId)
-    {
-        $this->userId = $userId;
-    }
-
-    /**
-     * @return null;
+     * @return DateTime;
      */
     public function getDateFrom()
     {
@@ -59,26 +52,10 @@ class RecordFilter
     }
 
     /**
-     * @param DateTime $dateFrom;
-     */
-    public function setDateFrom($dateFrom)
-    {
-        $this->dateFrom = $dateFrom;
-    }
-
-    /**
-     * @return null;
+     * @return DateTime;
      */
     public function getDateTo()
     {
         return $this->dateTo;
-    }
-
-    /**
-     * @param $dateTo;
-     */
-    public function setDateTo($dateTo)
-    {
-        $this->dateTo = $dateTo;
     }
 }

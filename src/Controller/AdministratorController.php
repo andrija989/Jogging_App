@@ -2,6 +2,7 @@
 
 namespace App\Controller;
 
+use App\Exceptions\UserNotFoundException;
 use App\Repository\Interfaces\UserRepositoryInterface;
 use Doctrine\ORM\NonUniqueResultException;
 use Doctrine\ORM\OptimisticLockException;
@@ -15,7 +16,7 @@ use App\Repository\UserRepository;
 class AdministratorController extends AbstractController
 {
     /**
-     * @var UserRepository
+     * @var UserRepository $userRepository
      */
     private $userRepository;
 
@@ -47,8 +48,9 @@ class AdministratorController extends AbstractController
      * @throws NonUniqueResultException
      * @throws ORMException
      * @throws OptimisticLockException
+     * @throws UserNotFoundException
      */
-    public function deleteUser($id)
+    public function deleteUser(int $id)
     {
         $user = $this->userRepository->ofId($id);
         $this->userRepository->remove($user);
@@ -59,7 +61,6 @@ class AdministratorController extends AbstractController
 
     /**
      * @param Request $request
-     *
      * @param int $id
      *
      * @return Response
@@ -67,8 +68,9 @@ class AdministratorController extends AbstractController
      * @throws NonUniqueResultException
      * @throws ORMException
      * @throws OptimisticLockException
+     * @throws UserNotFoundException
      */
-    public function updateUser(Request $request,$id)
+    public function updateUser(Request $request,int $id)
     {
         $user = $this->userRepository->ofId($id);
         $users = $this->userRepository->filter();

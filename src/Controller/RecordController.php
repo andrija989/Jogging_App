@@ -2,16 +2,16 @@
 
 namespace App\Controller;
 
-use App\Entity\Record;
 use App\Exceptions\RecordNotFoundException;
+use App\Exceptions\UserNotFoundException;
 use App\Filters\Builders\RecordFilterBuilder;
 use App\Repository\Interfaces\RecordRepositoryInterface;
 use App\Repository\Interfaces\UserRepositoryInterface;
 use App\Repository\RecordRepository;
 use App\Repository\UserRepository;
 use Doctrine\ORM\NonUniqueResultException;
-use Doctrine\ORM\OptimisticLockException;
 use Doctrine\ORM\ORMException;
+use Exception;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Request;
@@ -39,9 +39,7 @@ class RecordController extends AbstractController
      * RecordController constructor.
      *
      * @param UrlGeneratorInterface $urlGenerator
-     *
      * @param RecordRepositoryInterface $recordRepository
-     *
      * @param UserRepositoryInterface $userRepository
      */
     public function __construct(UrlGeneratorInterface $urlGenerator, RecordRepositoryInterface $recordRepository, UserRepositoryInterface $userRepository)
@@ -53,14 +51,15 @@ class RecordController extends AbstractController
 
     /**
      * @param Request $request
-     *
-     * @param $id
+     * @param int $id
      *
      * @return Response
      *
      * @throws NonUniqueResultException
+     * @throws UserNotFoundException
+     * @throws Exception
      */
-    public function index(Request $request, $id)
+    public function index(Request $request,int $id)
     {
         $filter = RecordFilterBuilder::valueOf()
             ->setUserId($id)
@@ -79,6 +78,7 @@ class RecordController extends AbstractController
         $distance = 0;
         $averageDistance = 0;
         $counter = 0.0001;
+
         foreach($records as $record) {
             if ( $record->getDate()->format('W') == $reportDate)
             {
@@ -110,37 +110,36 @@ class RecordController extends AbstractController
 
     /**
      * @param Request $request
-     *
      * @param int $id
      *
      * @return RedirectResponse
      *
      * @throws NonUniqueResultException
      * @throws ORMException
+     * @throws UserNotFoundException
      */
-    public function store(Request $request, $id)
+    public function store(Request $request, int $id)
     {
-        $record = new Record();
-        $record->setDate(new \DateTime());
-        $record->setDistance($request->get('distance'));
-        $record->setTime($request->get('time'));
+        $date = new \DateTime();
+        $distance = $request->get('distance');
+        $time = $request->get('time');
         $user = $this->userRepository->ofId($id);
-        $record->setUserId($user);
 
+        $record = $user->createRecord($date, $distance, $time);
         $this->recordRepository->add($record);
 
         return new RedirectResponse($this->urlGenerator->generate('home',['id' => $user->getId()]));
     }
 
     /**
-     * @param $id
+     * @param int $id
      *
      * @return Response
      *
      * @throws NonUniqueResultException
      * @throws RecordNotFoundException
      */
-    public function edit($id)
+    public function edit(int $id)
     {
        $record = $this->recordRepository->ofId($id);
 
@@ -159,7 +158,7 @@ class RecordController extends AbstractController
      * @throws ORMException
      * @throws RecordNotFoundException
      */
-    public function updateRecord(Request $request,$id)
+    public function updateRecord(Request $request,int $id)
     {
         $record = $record = $this->recordRepository->ofId($id);
         $user = $record->getUser();
@@ -178,7 +177,6 @@ class RecordController extends AbstractController
      * @throws NonUniqueResultException
      * @throws ORMException
      * @throws RecordNotFoundException
-     * @throws OptimisticLockException
      */
     public function deleteRecord($id)
     {

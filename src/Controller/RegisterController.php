@@ -13,11 +13,11 @@ use Symfony\Component\Security\Core\Encoder\UserPasswordEncoderInterface;
 class RegisterController extends AbstractController
 {
     /**
-     * @var UserPasswordEncoderInterface
+     * @var UserPasswordEncoderInterface $passwordEncoder
      */
     private $passwordEncoder;
     /**
-     * @var UrlGeneratorInterface
+     * @var UrlGeneratorInterface $urlGenerator
      */
     private $urlGenerator;
 
@@ -47,6 +47,7 @@ class RegisterController extends AbstractController
 
     /**
      * @param Request $request
+     *
      * @return Response
      */
     public function store(Request $request): Response
