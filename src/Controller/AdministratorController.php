@@ -2,7 +2,10 @@
 
 namespace App\Controller;
 
+use App\Exceptions\UserNotFoundException;
 use App\Services\UserService;
+use Doctrine\ORM\NonUniqueResultException;
+use Doctrine\ORM\ORMException;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Request;
@@ -30,7 +33,7 @@ class AdministratorController extends AbstractController
      */
     public function index()
     {
-        $users = $this->userService->showUsers();
+        $users = $this->userService->showUsers()->getUsers();
 
         return $this->render('Users/administrator.html.twig', ['users' => $users]);
     }
@@ -39,6 +42,10 @@ class AdministratorController extends AbstractController
      * @param int $id
      *
      * @return RedirectResponse
+     *
+     * @throws UserNotFoundException
+     * @throws NonUniqueResultException
+     * @throws ORMException
      */
     public function deleteUser(int $id)
     {
@@ -52,13 +59,16 @@ class AdministratorController extends AbstractController
      * @param int $id
      *
      * @return Response
+     *
+     * @throws NonUniqueResultException
+     * @throws ORMException
+     * @throws UserNotFoundException
      */
     public function updateUser(Request $request,int $id)
     {
-        $users = $this->userService->showUsers();
         $role = $request->get('role');
-
         $this->userService->updateUserRole($id, $role);
+        $users = $this->userService->showUsers()->getUsers();
 
         return $this->render('Users/administrator.html.twig', ['users' => $users]);
     }

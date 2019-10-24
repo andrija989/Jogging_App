@@ -2,6 +2,8 @@
 
 namespace App\Services;
 
+use App\DataTransferObjects\ListRecordsDTO;
+use App\DataTransferObjects\RecordDTO;
 use App\Entity\Record;
 use App\Exceptions\RecordNotFoundException;
 use App\Filters\Builders\RecordFilterBuilder;
@@ -44,11 +46,11 @@ class RecordService
      * @param string|null $dateFrom
      * @param string|null $dateTo
      *
-     * @return Record[]|array
+     * @return ListRecordsDTO
      *
      * @throws Exception
      */
-    public function getRecords(int $userId, string $dateFrom = null, string $dateTo = null): array
+    public function getRecords(int $userId, string $dateFrom = null, string $dateTo = null): ListRecordsDTO
     {
         $filter = RecordFilterBuilder::valueOf()
             ->setUserId($userId)
@@ -57,30 +59,37 @@ class RecordService
 
         $records = $this->recordRepository->filter($filter->build());
 
-        return $records;
+        return new ListRecordsDTO($records);
     }
 
     /**
      * @param int $recordId
      *
-     * @return Record
+     * @return RecordDTO
      *
      * @throws NonUniqueResultException
      * @throws RecordNotFoundException
      */
-    public function getRecord(int $recordId)
+    public function getRecord(int $recordId): RecordDTO
     {
-        return $this->recordRepository->ofId($recordId);
+        $record = $this->recordRepository->ofId($recordId);
+
+        return new RecordDTO($record);
     }
 
     /**
      * @param Record $record
      *
+     * @return RecordDTO
+     *
      * @throws ORMException
      */
-    public function storeRecord(Record $record)
+    public function storeRecord(Record $record): RecordDTO
     {
-        $this->recordRepository->add($record);
+        $record = $this->recordRepository->add($record);
+
+        return new RecordDTO($record);
+
     }
 
     /**
@@ -91,7 +100,7 @@ class RecordService
      * @throws RecordNotFoundException
      * @throws NonUniqueResultException
      */
-    public function editRecord(int $id)
+    public function routeToEditRecord(int $id)
     {
         return $this->recordRepository->ofId($id);
     }
@@ -101,20 +110,29 @@ class RecordService
      * @param int $distance
      * @param int $time
      *
-     * @return Record
+     * @return RecordDTO
      *
      * @throws NonUniqueResultException
      * @throws ORMException
      * @throws RecordNotFoundException
      */
-    public function updateRecord(int $id, int $distance, int $time)
+    public function updateRecord(int $id, int $distance, int $time): RecordDTO
     {
-        $record = $this->getRecord($id);
+        $record = $this->recordRepository->ofId($id);
         $record->setDistance($distance);
         $record->setTime($time);
         $this->recordRepository->add($record);
+
+        return new RecordDTO($record);
     }
 
+    /**
+     * @param $recordId
+     *
+     * @throws NonUniqueResultException
+     * @throws ORMException
+     * @throws RecordNotFoundException
+     */
     public function deleteRecordById($recordId)
     {
         $record = $this->recordRepository->ofId($recordId);

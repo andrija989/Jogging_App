@@ -54,15 +54,15 @@ class RecordController extends AbstractController
      *
      * @throws Exception
      */
-    public function index(Request $request,int $id)
+    public function index(Request $request,int $id): Response
     {
         $dateFrom = $request->get('dateFrom');
         $dateTo = $request->get('dateTo');
         $reportDate = $request->get('week');
         $user = $this->userService->getUser($id);
-        $records = $this->recordService->getRecords($id, $dateFrom, $dateTo);
+        $records = $this->recordService->getRecords($id, $dateFrom, $dateTo)->getRecords();
 
-        /**
+         /**
          * Report getting with average speed and time
          */
         $averageTime = 0;
@@ -95,7 +95,7 @@ class RecordController extends AbstractController
      * @throws ORMException
      * @throws UserNotFoundException
      */
-    public function store(Request $request, int $id)
+    public function store(Request $request, int $id): RedirectResponse
     {
         $date = new \DateTime();
         $distance = $request->get('distance');
@@ -116,9 +116,9 @@ class RecordController extends AbstractController
      * @throws NonUniqueResultException
      * @throws RecordNotFoundException
      */
-    public function edit(int $id)
+    public function routeToEdit(int $id): Response
     {
-       $record = $this->recordService->editRecord($id);
+       $record = $this->recordService->routeToEditRecord($id);
 
        return $this->render('record/edit.html.twig', ['record' => $record]);
 
@@ -135,7 +135,7 @@ class RecordController extends AbstractController
      * @throws ORMException
      * @throws RecordNotFoundException
      */
-    public function updateRecord(Request $request,int $id)
+    public function updateRecord(Request $request,int $id): RedirectResponse
     {
         $distance = $request->get('distance');
         $time = $request->get('time');
@@ -146,14 +146,15 @@ class RecordController extends AbstractController
     }
 
     /**
-     * @param $id
+     * @param int $id
      *
      * @return RedirectResponse
      *
      * @throws NonUniqueResultException
+     * @throws ORMException
      * @throws RecordNotFoundException
      */
-    public function deleteRecord($id)
+    public function deleteRecord(int $id): RedirectResponse
     {
         $record = $this->recordService->getRecord($id);
         $this->recordService->deleteRecordById($id);

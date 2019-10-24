@@ -3,6 +3,9 @@
 namespace App\Controller;
 
 use App\Entity\User;
+use App\Repository\Interfaces\UserRepositoryInterface;
+use App\Repository\UserRepository;
+use Doctrine\ORM\ORMException;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Request;
@@ -22,17 +25,26 @@ class RegisterController extends AbstractController
     private $urlGenerator;
 
     /**
+     * @var UserRepository $userRepository
+     */
+    private $userRepository;
+
+    /**
      * RegisterController constructor.
      *
      * @param UserPasswordEncoderInterface $passwordEncoder
-     *
      * @param UrlGeneratorInterface $urlGenerator
+     * @param UserRepositoryInterface $userRepository
      */
-    public function __construct(UserPasswordEncoderInterface $passwordEncoder,UrlGeneratorInterface $urlGenerator)
+    public function __construct(
+        UserPasswordEncoderInterface $passwordEncoder,
+        UrlGeneratorInterface $urlGenerator,
+        UserRepositoryInterface $userRepository)
     {
 
         $this->passwordEncoder = $passwordEncoder;
         $this->urlGenerator = $urlGenerator;
+        $this->userRepository = $userRepository;
     }
 
     /**
@@ -49,18 +61,20 @@ class RegisterController extends AbstractController
      * @param Request $request
      *
      * @return Response
+     *
+     * @throws ORMException
      */
     public function store(Request $request): Response
     {
-        $entityManager = $this->getDoctrine()->getManager();
-        $user = new User();
-        $user->setEmail($request->get('email'));
+        $email = $request->get('email');
         $password = $request->get('password');
+        $role = 'ROLE_USER';
+        $user = new User($email, $role);
         $password = $this->passwordEncoder->encodePassword($user, $password);
         $user->setPassword($password);
-        $user->setRoles('ROLE_USER');
-        $entityManager->persist($user);
-        $entityManager->flush();
+
+        $this->userRepository->add($user);
+
         return new RedirectResponse($this->urlGenerator->generate('login'));
     }
 }

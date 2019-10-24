@@ -30,7 +30,7 @@ record-delete:
 edit:
   path: /record/edit/{id}
   methods: GET
-  controller: App\Controller\RecordController::edit
+  controller: App\Controller\RecordController::routeToEdit
 
 record-update:
   path: /record/edit/{id}

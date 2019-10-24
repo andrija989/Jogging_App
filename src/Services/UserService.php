@@ -2,11 +2,14 @@
 
 namespace App\Services;
 
+use App\DataTransferObjects\ListUsersDTO;
+use App\DataTransferObjects\UserDTO;
 use App\Entity\User;
 use App\Exceptions\UserNotFoundException;
 use App\Repository\Interfaces\UserRepositoryInterface;
 use App\Repository\UserRepository;
 use Doctrine\ORM\NonUniqueResultException;
+use Doctrine\ORM\ORMException;
 
 class UserService
 {
@@ -28,24 +31,35 @@ class UserService
     /**
      * @param $userId
      *
-     * @return User
+     * @return UserDTO
      *
      * @throws UserNotFoundException
      * @throws NonUniqueResultException
      */
-    public function getUser($userId)
+    public function getUser($userId): UserDTO
     {
-        return $this->userRepository->ofId($userId);
+        $user = $this->userRepository->ofId($userId);
+        return new UserDTO($user);
     }
 
     /**
-     * @return User[]
+     * @return ListUsersDTO
      */
-    public function showUsers()
+    public function showUsers():ListUsersDTO
     {
-        return $this->userRepository->filter();
+        $users = $this->userRepository->filter();
+        return new ListUsersDTO($users);
     }
 
+    /**
+     * @param $userId
+     *
+     * @return User
+     *
+     * @throws NonUniqueResultException
+     * @throws UserNotFoundException
+     * @throws ORMException
+     */
     public function deleteUser($userId)
     {
         $user = $this->userRepository->ofId($userId);
@@ -53,10 +67,22 @@ class UserService
         $this->userRepository->remove($user);
     }
 
-    public function updateUserRole($userId, $role)
+    /**
+     * @param int $userId
+     * @param string $role
+     *
+     * @return UserDTO
+     *
+     * @throws NonUniqueResultException
+     * @throws ORMException
+     * @throws UserNotFoundException
+     */
+    public function updateUserRole(int $userId,string $role): UserDTO
     {
         $user = $this->userRepository->ofId($userId);
         $user->setRoles($role);
         $this->userRepository->add($user);
+
+        return new UserDTO($user);
     }
 }

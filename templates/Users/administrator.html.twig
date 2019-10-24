@@ -21,7 +21,7 @@
             <tbody>
                 {% for user in users %}
                 <tr class = "user-list">
-                    <td><a href="{{ path('home', {'id': user.getId()}) }}">{{ user.getUsername() }}</a></td>
+                    <td><a href="{{ path('home', {'id': user.getId()}) }}">{{ user.getEmail() }}</a></td>
                     {% for role in user.roles %}
                     <td>{{ role }}</td>
                     {% endfor %}
