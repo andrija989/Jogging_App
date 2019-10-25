@@ -62,5 +62,6 @@ administrator-update:
   methods: POST
   controller: App\Controller\AdministratorController::updateUser
 
-
+api_login_check:
+  path: /api/login_check
 

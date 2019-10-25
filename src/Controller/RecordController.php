@@ -75,7 +75,6 @@ class RecordController extends AbstractController
             ->getRecords($user->getId(), $dateFrom, $dateTo)
             ->getRecords();
 
-        $this->denyAccessUnlessGranted('view', $user);
          /**
          * Report getting with average speed and time
          */
