@@ -2,28 +2,30 @@
 
 namespace App\DataTransferObjects;
 
+use App\Entity\User;
+
 class ListUsersDTO
 {
     /**
-     * @var array $users
+     * @var UserDTO[] $users
      */
     private $users;
 
     /**
      * ListUsersDTO constructor.
      *
-     * @param array $users
+     * @param User[] $users
      */
     public function __construct(array $users)
     {
         $this->users = [];
-        foreach ($users as $user){
+        foreach ($users as $user) {
             $this->users[] = new UserDTO($user);
         }
     }
 
     /**
-     * @return array
+     * @return UserDTO[]
      */
     public function getUsers(): array
     {

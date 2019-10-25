@@ -2,22 +2,24 @@
 
 namespace App\DataTransferObjects;
 
+use App\Entity\Record;
+
 class ListRecordsDTO
 {
     /**
-     * @var array $records
+     * @var RecordDTO[] $records
      */
     private $records;
 
     /**
      * ListRecordsDTO constructor.
      *
-     * @param array $records
+     * @param Record[] $records
      */
     public function __construct(array $records)
     {
         $this->records = [];
-        foreach ($records as $record){
+        foreach ($records as $record) {
             $this->records[] = new RecordDTO($record);
         }
     }

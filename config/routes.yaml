@@ -18,7 +18,7 @@ home:
   controller: App\Controller\RecordController::index
 
 record-store:
-  path: /home/{id}
+  path: /home
   methods: POST
   controller: App\Controller\RecordController::store
 

@@ -5,12 +5,14 @@ namespace App\Services;
 use App\DataTransferObjects\ListRecordsDTO;
 use App\DataTransferObjects\RecordDTO;
 use App\Entity\Record;
+use App\Entity\User;
 use App\Exceptions\RecordNotFoundException;
 use App\Filters\Builders\RecordFilterBuilder;
 use App\Repository\Interfaces\RecordRepositoryInterface;
 use App\Repository\Interfaces\UserRepositoryInterface;
 use App\Repository\RecordRepository;
 use App\Repository\UserRepository;
+use DateTime;
 use Doctrine\ORM\NonUniqueResultException;
 use Doctrine\ORM\ORMException;
 use Exception;
@@ -50,8 +52,11 @@ class RecordService
      *
      * @throws Exception
      */
-    public function getRecords(int $userId, string $dateFrom = null, string $dateTo = null): ListRecordsDTO
-    {
+    public function getRecords(
+        int $userId,
+        string $dateFrom = null,
+        string $dateTo = null
+    ): ListRecordsDTO {
         $filter = RecordFilterBuilder::valueOf()
             ->setUserId($userId)
             ->setDateFrom($dateFrom)
@@ -78,31 +83,21 @@ class RecordService
     }
 
     /**
-     * @param Record $record
+     * @param DateTime $date
+     * @param int $distance
+     * @param int $time
+     * @param User $user
      *
      * @return RecordDTO
      *
      * @throws ORMException
      */
-    public function storeRecord(Record $record): RecordDTO
+    public function storeRecord(DateTime $date, int $distance, int $time, User $user): RecordDTO
     {
+        $record = $user->createRecord($date, $distance, $time);
         $record = $this->recordRepository->add($record);
 
         return new RecordDTO($record);
-
-    }
-
-    /**
-     * @param int $id
-     *
-     * @return Record
-     *
-     * @throws RecordNotFoundException
-     * @throws NonUniqueResultException
-     */
-    public function routeToEditRecord(int $id)
-    {
-        return $this->recordRepository->ofId($id);
     }
 
     /**
@@ -133,7 +128,7 @@ class RecordService
      * @throws ORMException
      * @throws RecordNotFoundException
      */
-    public function deleteRecordById($recordId)
+    public function deleteRecordById($recordId): void
     {
         $record = $this->recordRepository->ofId($recordId);
 
@@ -145,7 +140,7 @@ class RecordService
      *
      * @return int
      */
-    public function averageDistance(array $records,string $reportDate)
+    public function averageDistance(array $records, string $reportDate)
     {
         $distance = 0;
         $averageDistance = 0;
@@ -169,7 +164,7 @@ class RecordService
      *
      * @return int
      */
-    public function averageTime(array $records,string $reportDate)
+    public function averageTime(array $records, string $reportDate)
     {
         $time = 0;
         $averageTime = 0;

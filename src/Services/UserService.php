@@ -31,21 +31,20 @@ class UserService
     /**
      * @param $userId
      *
-     * @return UserDTO
+     * @return User
      *
      * @throws UserNotFoundException
      * @throws NonUniqueResultException
      */
-    public function getUser($userId): UserDTO
+    public function getUser($userId): User
     {
-        $user = $this->userRepository->ofId($userId);
-        return new UserDTO($user);
+       return $this->userRepository->ofId($userId);
     }
 
     /**
      * @return ListUsersDTO
      */
-    public function showUsers():ListUsersDTO
+    public function showUsers(): ListUsersDTO
     {
         $users = $this->userRepository->filter();
         return new ListUsersDTO($users);
@@ -77,7 +76,7 @@ class UserService
      * @throws ORMException
      * @throws UserNotFoundException
      */
-    public function updateUserRole(int $userId,string $role): UserDTO
+    public function updateUserRole(int $userId, string $role): UserDTO
     {
         $user = $this->userRepository->ofId($userId);
         $user->setRoles($role);

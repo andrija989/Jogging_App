@@ -44,7 +44,7 @@ class RecordDTO
         $this->date = $record->getDate();
         $this->distance = $record->getDistance();
         $this->time = $record->getTime();
-        $this->user = $record->getUser();
+        $this->user = new UserDTO($record->getUser());
     }
 
     /**
@@ -82,7 +82,7 @@ class RecordDTO
     /**
      * @return User
      */
-    public function getUser(): User
+    public function getUser(): UserDTO
     {
         return $this->user;
     }
