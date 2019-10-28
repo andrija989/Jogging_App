@@ -65,3 +65,16 @@ administrator-update:
 api_login_check:
   path: /api/login_check
 
+api:
+  prefix: /api
+  resource: '../src/Controller/Api'
+
+app.swagger_ui:
+  path: /api/doc
+  methods: GET
+  defaults: { _controller: nelmio_api_doc.controller.swagger_ui }
+
+api-records:
+  path: /api/records
+  methods: GET
+  controller: App\Controller\Api\ApiRecord::records

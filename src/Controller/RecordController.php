@@ -71,6 +71,8 @@ class RecordController extends AbstractController
         $dateTo = $request->get('dateTo');
         $reportDate = $request->get('week');
         $user = $this->userService->getUser($id);
+        $token = $this->tokenStorage->getToken();
+
         $records = $this->recordService
             ->getRecords($user->getId(), $dateFrom, $dateTo)
             ->getRecords();
